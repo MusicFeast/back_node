@@ -105,14 +105,15 @@ const sendTokenContract = async (toAddress: string, amount: number) => {
     tokenOut,
     {
       viewMethods: [], // view methods do not change state but usually return a value
-      changeMethods: ["ft_transfer"], // change methods modify state
+      changeMethods: ["ft_transfer_call"], // change methods modify state
     }
   );
 
-  const result = await contract.ft_transfer(
+  const result = await contract.ft_transfer_call(
     {
       receiver_id: toAddress,
       amount: String(amount),
+      msg: "",
     },
     "300000000000000",
     "1"
