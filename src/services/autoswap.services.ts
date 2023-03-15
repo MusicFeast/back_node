@@ -16,10 +16,18 @@ const decimals = 2;
 
 const AutoSwap = async () => {
   try {
-    const nearPrice = await axios.get("https://nearblocks.io/api/near-price");
+    console.log("ENTRO");
+    // const nearPrice = await axios.get("https://nearblocks.io/api/near-price");
 
-    if (!nearPrice.data.usd) throw new Error("Error near usd");
-    const nearUsd = nearPrice.data.usd;
+    // if (!nearPrice.data.usd) throw new Error("Error near usd");
+    // const nearUsd = nearPrice.data.usd;
+
+    const nearPrice: any = await axios.get(
+      "https://api.coingecko.com/api/v3/simple/price?ids=NEAR&vs_currencies=USD"
+    );
+
+    if (!nearPrice.data.near.usd) throw new Error("Error near usd");
+    const nearUsd = nearPrice.data.near.usd;
 
     const dataForSwap = await getAutoSwapsApollo();
 
@@ -49,7 +57,7 @@ const AutoSwap = async () => {
           [item.artist_id]
         );
 
-        if (response.rows.length === 0) throw new Error("Error db connection");
+        if (response.rows.length === 0) continue;
 
         addressSend = response.rows[0].account_near;
         addressTax = response.rows[0].account_near_tax;
@@ -58,7 +66,7 @@ const AutoSwap = async () => {
         addressTax = "mftftest.testnet";
       }
 
-      if (!addressSend || !addressTax) throw new Error("Error addreses");
+      if (!addressSend || !addressTax) continue;
 
       const sendUser =
         Number(utils.format.formatNearAmount(item.amount)) * nearUsd;
@@ -67,12 +75,14 @@ const AutoSwap = async () => {
       const sendUserEnd = Math.round(sendUser * Math.pow(10, decimals));
       const sendTaxEnd = Math.round(sendTax * Math.pow(10, decimals));
 
+      if (!sendTaxEnd || !sendUserEnd) continue;
+
       const activated = await activateAccount(addressSend);
       const activatedTax = await activateAccount(addressTax);
 
       console.log("ACTIVATED", activated, activatedTax);
 
-      if (!activated) return;
+      if (!activated) continue;
 
       const result = await sendTransferToken(
         addressSend,
@@ -81,7 +91,7 @@ const AutoSwap = async () => {
         sendTaxEnd
       );
 
-      if (!result) return;
+      if (!result) continue;
 
       await callsContractEnd(
         item.artist_id,
@@ -94,7 +104,7 @@ const AutoSwap = async () => {
   } catch (error) {
     console.log("err");
     console.log(error);
-    AutoSwap();
+    // AutoSwap();
   }
 };
 

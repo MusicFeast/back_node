@@ -16,7 +16,9 @@ app.use(morgan("dev"));
 app.use(cors());
 app.use(express.json());
 
-dbConnect().then(() => console.log("Conexion DB Ready"));
+dbConnect().then(async () => {
+  console.log("Conexion DB Ready");
+});
 
 let server;
 console.log(process.env.NODE_ENV);

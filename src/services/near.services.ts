@@ -30,6 +30,8 @@ const tokenIn = "wrap.testnet";
 const tokenOut = "nusdc.ft-fin.testnet";
 const decimals = 2;
 
+console.log(address, privateKey, tokenIn, tokenOut);
+
 const keyStore = new keyStores.InMemoryKeyStore();
 
 const keyPair = KeyPair.fromString(privateKey);
@@ -46,6 +48,8 @@ const sendTransferToken = async (
 ) => {
   try {
     console.log("TRANSFER INIT");
+
+    console.log(toAddress, amount, toAddressTax, amountTax);
 
     const trx = await createTransactionFn(
       tokenOut,
@@ -93,9 +97,9 @@ const callsContractEnd = async (
   try {
     console.log({
       artist_id: artistId,
-      amount_near: Number(amountNear),
-      tax_near: Number(taxNear),
-      amount_usd: Number(amountUsd),
+      amount_near: amountNear,
+      tax_near: taxNear,
+      amount_usd: amountUsd,
       ft_token: ftToken,
     });
     console.log("CALL CONTRACT INIT");
