@@ -6,7 +6,7 @@ import morgan from "morgan";
 import dbConnect from "./config/postgres";
 import * as http from "http";
 import * as https from "https";
-import { startAutoSwap } from "./services/autoswap.services";
+import { AutoSwap } from "./services/autoswap.services";
 const fs = require("fs");
 
 const PORT = Number(process.env.POST) || 3000;
@@ -47,5 +47,12 @@ if (process.env.NODE_ENV === "production") {
 }
 
 server.listen(PORT, () => console.log(`Listo por el puerto ${PORT}`));
+
+const startAutoSwap = () => {
+  AutoSwap();
+  // setInterval(async () => {
+  //   AutoSwap();
+  // }, 60000);
+};
 
 startAutoSwap();
