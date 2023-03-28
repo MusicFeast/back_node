@@ -7,6 +7,7 @@ import dbConnect from "./config/postgres";
 import * as http from "http";
 import * as https from "https";
 import { AutoSwap } from "./services/autoswap.services";
+import { updateTasaNear } from "./services/tasaNear.services";
 const fs = require("fs");
 
 const PORT = Number(process.env.POST) || 3000;
@@ -51,10 +52,18 @@ if (process.env.NODE_ENV === "production") {
 server.listen(PORT, () => console.log(`Listo por el puerto ${PORT}`));
 
 const startAutoSwap = () => {
-  AutoSwap();
+  // AutoSwap();
   // setInterval(async () => {
   //   AutoSwap();
   // }, 60000);
 };
 
-startAutoSwap();
+const startUpdateTasa = () => {
+  updateTasaNear();
+  setInterval(async () => {
+    updateTasaNear();
+  }, 60000);
+};
+
+// startAutoSwap();
+startUpdateTasa();

@@ -105,7 +105,7 @@ const callsContractEnd = async (
     console.log("CALL CONTRACT INIT");
 
     const trx = await createTransactionFn(
-      "nft14.musicfeast.testnet",
+      process.env.SMART_CONTRACT!,
       [
         await functionCall(
           "auto_swap_ini",
