@@ -6,7 +6,7 @@ const cache = new InMemoryCache();
 const clientApollo = new ApolloClient({
   cache: cache,
   link: new HttpLink({
-    uri: "https://api.thegraph.com/subgraphs/name/hrpalencia/musicfeast",
+    uri: process.env.GRAPH_URL,
     fetch: fetch,
   }),
 });
@@ -18,7 +18,8 @@ const getAutoSwapsApollo = async () => {
         autoswaps {
           id
           artist_id
-          amount
+          amount_near
+          amount_usd
           status_des
           status_id
           tax

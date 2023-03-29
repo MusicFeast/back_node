@@ -9,10 +9,11 @@ import {
   swapNear,
   activateAccount,
   callsContractEnd,
+  callsContractError,
 } from "./near.services";
 import { getAutoSwapsApollo } from "./apolloGraphql.services";
 
-const decimals = 2;
+const decimals = Number(process.env.DECIMALS);
 
 const AutoSwap = async () => {
   try {
@@ -34,19 +35,27 @@ const AutoSwap = async () => {
     let totalAmountNear = 0;
 
     for (const forSwap of dataForSwap) {
-      totalAmountNear +=
-        Number(utils.format.formatNearAmount(forSwap.amount)) +
-        Number(utils.format.formatNearAmount(forSwap.tax));
+      if (forSwap.id === 0) {
+        totalAmountNear += Number(
+          utils.format.formatNearAmount(forSwap.amount_near) +
+            utils.format.formatNearAmount(forSwap.tax)
+        );
+      } else {
+        totalAmountNear += Number(
+          utils.format.formatNearAmount(forSwap.amount_near)
+        );
+      }
     }
     console.log("TotalAmount: " + totalAmountNear);
 
-    if (!(totalAmountNear > 0)) return;
+    if (!(totalAmountNear > 0)) return console.log("AUTOSWAP FAILED");
     const resultSwap = await swapNear(totalAmountNear);
 
-    if (!resultSwap) return;
+    if (!resultSwap) return console.log("AUTOSWAP END");
 
     for (const item of dataForSwap) {
-      let addressSend, addressTax;
+      console.log("ENTRO SWAPPPPP");
+      let addressSend;
 
       if (Number(item.artist_id) > 0) {
         const conexion = await dbConnect();
@@ -60,46 +69,49 @@ const AutoSwap = async () => {
         if (response.rows.length === 0) continue;
 
         addressSend = response.rows[0].account_near;
-        addressTax = response.rows[0].account_near_tax;
       } else {
-        addressSend = "mftftest.testnet";
-        addressTax = "mftftest.testnet";
+        addressSend = process.env.ADDRESS_SEND;
       }
 
-      if (!addressSend || !addressTax) continue;
+      if (!addressSend) continue;
 
-      const sendUser =
-        Number(utils.format.formatNearAmount(item.amount)) * nearUsd;
-      const sendTax = Number(utils.format.formatNearAmount(item.tax)) * nearUsd;
+      console.log(addressSend);
 
-      const sendUserEnd = Math.round(sendUser * Math.pow(10, decimals));
-      const sendTaxEnd = Math.round(sendTax * Math.pow(10, decimals));
+      // const sendUser =
+      //   Number(utils.format.formatNearAmount(item.amount)) * nearUsd;
 
-      if (!sendTaxEnd || !sendUserEnd) continue;
+      console.log(item.amount_usd);
+
+      const sendUserEnd = Math.round(item.amount_usd * Math.pow(10, decimals));
+
+      console.log(sendUserEnd);
+
+      if (!sendUserEnd) continue;
 
       const activated = await activateAccount(addressSend);
-      const activatedTax = await activateAccount(addressTax);
 
-      console.log("ACTIVATED", activated, activatedTax);
+      console.log("ACTIVATED", activated);
 
       if (!activated) continue;
 
-      const result = await sendTransferToken(
-        addressSend,
-        sendUserEnd,
-        addressTax,
-        sendTaxEnd
-      );
+      const result = await sendTransferToken(addressSend, sendUserEnd);
 
-      if (!result) continue;
-
-      await callsContractEnd(
-        item.artist_id,
-        item.amount,
-        item.tax,
-        "USDT",
-        String(sendUserEnd + sendTaxEnd)
-      );
+      if (result) {
+        await callsContractEnd(
+          item.artist_id,
+          item.amount_near,
+          item.tax,
+          "USDT",
+          item.amount_usd
+        );
+      } else {
+        await callsContractError(
+          item.artist_id,
+          item.amount_usd,
+          "USDT",
+          "Error in transfer token"
+        );
+      }
     }
     console.log("AUTOSWAP END");
   } catch (error) {

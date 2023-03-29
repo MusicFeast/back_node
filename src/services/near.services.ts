@@ -27,11 +27,8 @@ import { AccountService } from "./account.service";
 
 const address = process.env.ADDRESS!;
 const privateKey = process.env.PRIVATE_KEY!;
-const tokenIn = "wrap.testnet";
-const tokenOut = "nusdc.ft-fin.testnet";
-const decimals = 2;
-
-console.log(address, privateKey, tokenIn, tokenOut);
+const tokenIn = process.env.TOKEN_IN!;
+const tokenOut = process.env.TOKEN_OUT!;
 
 const keyStore = new keyStores.InMemoryKeyStore();
 
@@ -41,16 +38,9 @@ const near = new Near(CONFIG(keyStore));
 
 const account = new AccountService(near.connection, address);
 
-const sendTransferToken = async (
-  toAddress: string,
-  amount: number,
-  toAddressTax: string,
-  amountTax: number
-) => {
+const sendTransferToken = async (toAddress: string, amount: number) => {
   try {
-    console.log("TRANSFER INIT");
-
-    console.log(toAddress, amount, toAddressTax, amountTax);
+    console.log("TRANSFER INIT", amount);
 
     const trx = await createTransactionFn(
       tokenOut,
@@ -60,15 +50,6 @@ const sendTransferToken = async (
           {
             receiver_id: toAddress,
             amount: String(amount),
-          },
-          new BN("30000000000000"),
-          new BN("1")
-        ),
-        await functionCall(
-          "ft_transfer",
-          {
-            receiver_id: toAddressTax,
-            amount: String(amountTax),
           },
           new BN("30000000000000"),
           new BN("1")
@@ -97,37 +78,58 @@ const callsContractEnd = async (
   amountUsd: string
 ) => {
   try {
-    console.log({
-      artist_id: artistId,
-      amount_near: amountNear,
-      tax_near: taxNear,
-      amount_usd: amountUsd,
-      ft_token: ftToken,
-    });
     console.log("CALL CONTRACT INIT");
 
     const trx = await createTransactionFn(
       process.env.SMART_CONTRACT!,
       [
         await functionCall(
-          "auto_swap_ini",
+          "auto_swap_complete",
           {
             artist_id: artistId,
             amount_near: amountNear,
             tax_near: taxNear,
+            amount_usd: parseFloat(amountUsd),
             ft_token: ftToken,
           },
           new BN("30000000000000"),
           new BN("0")
         ),
+      ],
+      address,
+      near
+    );
+
+    const result = await account.signAndSendTrx(trx);
+
+    if (!result.transaction.hash) return false;
+    console.log("CALL CONTRACT END");
+    return result.transaction.hash as string;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+};
+
+const callsContractError = async (
+  artistId: string,
+  amount: string,
+  ftToken: String,
+  arg: String
+) => {
+  try {
+    console.log("CALL CONTRACT INIT");
+
+    const trx = await createTransactionFn(
+      process.env.SMART_CONTRACT!,
+      [
         await functionCall(
-          "auto_swap_end",
+          "auto_swap_transfer_error",
           {
             artist_id: artistId,
-            amount_near: amountNear,
-            tax_near: taxNear,
-            amount_usd: amountUsd,
+            amount: parseFloat(amount),
             ft_token: ftToken,
+            arg,
           },
           new BN("30000000000000"),
           new BN("0")
@@ -150,6 +152,7 @@ const callsContractEnd = async (
 
 const swapNear = async (amount: number) => {
   try {
+    console.log(tokenIn, tokenOut);
     const tokensMetadata = await ftGetTokensMetadata([tokenIn, tokenOut]);
 
     const simplePools = (await fetchAllPools()).simplePools.filter((pool) => {
@@ -350,4 +353,10 @@ async function createTransactionFn(
   );
 }
 
-export { swapNear, sendTransferToken, activateAccount, callsContractEnd };
+export {
+  swapNear,
+  sendTransferToken,
+  activateAccount,
+  callsContractEnd,
+  callsContractError,
+};

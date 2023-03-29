@@ -37,8 +37,6 @@ const updateTasaNear = async () => {
       "https://api.coingecko.com/api/v3/simple/price?ids=near&vs_currencies=usd"
     );
 
-    console.log(nearPrice.data);
-
     if (!nearPrice.data.near.usd) throw new Error("Error near usd");
     const nearUsd = nearPrice.data.near.usd;
 

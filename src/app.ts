@@ -55,7 +55,7 @@ const startAutoSwap = () => {
   AutoSwap();
   setInterval(async () => {
     AutoSwap();
-  }, 500000);
+  }, 200000);
 };
 
 const startUpdateTasa = () => {
@@ -66,4 +66,4 @@ const startUpdateTasa = () => {
 };
 
 startAutoSwap();
-startUpdateTasa();
+// startUpdateTasa();
