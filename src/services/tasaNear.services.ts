@@ -17,6 +17,7 @@ import {
 import BN from "bn.js";
 import { PublicKey } from "near-api-js/lib/utils";
 import axios from "axios";
+import { AccountService } from "./account.service";
 
 const address = process.env.ADDRESS!;
 const privateKey = process.env.PRIVATE_KEY!;
@@ -27,11 +28,11 @@ const keyPair = KeyPair.fromString(privateKey);
 keyStore.setKey(process.env.NEAR_ENV!, address, keyPair);
 const near = new Near(CONFIG(keyStore));
 
-const account = new Account(near.connection, address);
+const account = new AccountService(near.connection, address);
 
 const updateTasaNear = async () => {
   try {
-    console.log("HOLA");
+    console.log("UPDATE TASA INIT");
     const nearPrice: any = await axios.get(
       "https://api.coingecko.com/api/v3/simple/price?ids=near&vs_currencies=usd"
     );
@@ -58,10 +59,10 @@ const updateTasaNear = async () => {
       address,
       near
     );
-    const result = await account.signAndSendTransaction(trx);
+    const result = await account.signAndSendTrx(trx);
 
     if (!result.transaction.hash) return false;
-    console.log("CALL CONTRACT END");
+    console.log("UPDATE TASA END");
     return result.transaction.hash as string;
   } catch (error) {
     console.log(error);

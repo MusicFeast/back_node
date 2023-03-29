@@ -23,6 +23,7 @@ import {
 import BN from "bn.js";
 import { PublicKey } from "near-api-js/lib/utils";
 import axios from "axios";
+import { AccountService } from "./account.service";
 
 const address = process.env.ADDRESS!;
 const privateKey = process.env.PRIVATE_KEY!;
@@ -38,7 +39,7 @@ const keyPair = KeyPair.fromString(privateKey);
 keyStore.setKey(process.env.NEAR_ENV!, address, keyPair);
 const near = new Near(CONFIG(keyStore));
 
-const account = new Account(near.connection, address);
+const account = new AccountService(near.connection, address);
 
 const sendTransferToken = async (
   toAddress: string,
@@ -76,7 +77,8 @@ const sendTransferToken = async (
       address,
       near
     );
-    const result = await account.signAndSendTransaction(trx);
+
+    const result = await account.signAndSendTrx(trx);
 
     if (!result.transaction.hash) return false;
     console.log("TRANSFER END");
@@ -134,7 +136,8 @@ const callsContractEnd = async (
       address,
       near
     );
-    const result = await account.signAndSendTransaction(trx);
+
+    const result = await account.signAndSendTrx(trx);
 
     if (!result.transaction.hash) return false;
     console.log("CALL CONTRACT END");
@@ -220,7 +223,8 @@ const swapNear = async (amount: number) => {
     for (let trx of nearTransactions) {
       console.log("ENTRA");
       console.log(trx.actions[0].functionCall.methodName);
-      const result = await account.signAndSendTransaction(trx);
+
+      const result = await account.signAndSendTrx(trx);
       console.log(result);
 
       if (trx.actions[0].functionCall.methodName === "ft_transfer_call") {
@@ -274,7 +278,8 @@ const activateAccount = async (toAddress: string) => {
       address,
       near
     );
-    const result = await account.signAndSendTransaction(trx);
+
+    const result = await account.signAndSendTrx(trx);
 
     if (!result.transaction.hash) return false;
     console.log("ACTIVATE END");

@@ -16,7 +16,7 @@ const decimals = 2;
 
 const AutoSwap = async () => {
   try {
-    console.log("ENTRO");
+    console.log("AUTOSWAP INIT");
     // const nearPrice = await axios.get("https://nearblocks.io/api/near-price");
 
     // if (!nearPrice.data.usd) throw new Error("Error near usd");
@@ -101,6 +101,7 @@ const AutoSwap = async () => {
         String(sendUserEnd + sendTaxEnd)
       );
     }
+    console.log("AUTOSWAP END");
   } catch (error) {
     console.log("err");
     console.log(error);
