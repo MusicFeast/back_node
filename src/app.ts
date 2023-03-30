@@ -55,14 +55,14 @@ const startAutoSwap = () => {
   AutoSwap();
   setInterval(async () => {
     AutoSwap();
-  }, 200000);
+  }, 400000);
 };
 
 const startUpdateTasa = () => {
   updateTasaNear();
   setInterval(async () => {
     updateTasaNear();
-  }, 60000);
+  }, 180000);
 };
 
 startAutoSwap();

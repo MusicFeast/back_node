@@ -25,8 +25,8 @@ import { PublicKey } from "near-api-js/lib/utils";
 import axios from "axios";
 import { AccountService } from "./account.service";
 
-const address = process.env.ADDRESS!;
-const privateKey = process.env.PRIVATE_KEY!;
+const address = process.env.ADDRESS_SWAP!;
+const privateKey = process.env.PRIVATE_KEY_SWAP!;
 const tokenIn = process.env.TOKEN_IN!;
 const tokenOut = process.env.TOKEN_OUT!;
 
@@ -89,7 +89,7 @@ const callsContractEnd = async (
             artist_id: artistId,
             amount_near: amountNear,
             tax_near: taxNear,
-            amount_usd: parseFloat(amountUsd),
+            amount_usd: amountUsd,
             ft_token: ftToken,
           },
           new BN("30000000000000"),
@@ -127,7 +127,7 @@ const callsContractError = async (
           "auto_swap_transfer_error",
           {
             artist_id: artistId,
-            amount: parseFloat(amount),
+            amount,
             ft_token: ftToken,
             arg,
           },
@@ -224,6 +224,11 @@ const swapNear = async (amount: number) => {
 
     let resultSwap: any;
     for (let trx of nearTransactions) {
+      if (trx.actions[0].functionCall.methodName === "near_deposit") {
+        console.log("FUNCTION ESPERA INIT");
+        await esperar(5000);
+        console.log("FUNCTION ESPERA END");
+      }
       console.log("ENTRA");
       console.log(trx.actions[0].functionCall.methodName);
 
@@ -247,6 +252,12 @@ const swapNear = async (amount: number) => {
     return false;
   }
 };
+
+function esperar(ms: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
 
 const activateAccount = async (toAddress: string) => {
   try {

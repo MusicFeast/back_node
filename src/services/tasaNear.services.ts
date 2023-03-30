@@ -19,8 +19,8 @@ import { PublicKey } from "near-api-js/lib/utils";
 import axios from "axios";
 import { AccountService } from "./account.service";
 
-const address = process.env.ADDRESS!;
-const privateKey = process.env.PRIVATE_KEY!;
+const address = process.env.ADDRESS_TASA!;
+const privateKey = process.env.PRIVATE_KEY_TASA!;
 
 const keyStore = new keyStores.InMemoryKeyStore();
 

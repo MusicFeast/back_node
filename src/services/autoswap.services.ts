@@ -48,7 +48,8 @@ const AutoSwap = async () => {
     }
     console.log("TotalAmount: " + totalAmountNear);
 
-    if (!(totalAmountNear > 0)) return console.log("AUTOSWAP FAILED");
+    if (!(totalAmountNear > 0)) return console.log("AUTOSWAP NOT AMOUNT NEAR");
+
     const resultSwap = await swapNear(totalAmountNear);
 
     if (!resultSwap) return console.log("AUTOSWAP END");
@@ -88,27 +89,32 @@ const AutoSwap = async () => {
 
       if (!sendUserEnd) continue;
 
-      const activated = await activateAccount(addressSend);
+      let result;
 
-      console.log("ACTIVATED", activated);
+      if (item.amount_usd > 0) {
+        const activated = await activateAccount(addressSend);
 
-      if (!activated) continue;
+        console.log("ACTIVATED", activated);
+        result = await sendTransferToken(addressSend, sendUserEnd);
+      } else {
+        result = true;
+      }
 
-      const result = await sendTransferToken(addressSend, sendUserEnd);
+      console.log("CALLLSSS");
 
       if (result) {
         await callsContractEnd(
           item.artist_id,
           item.amount_near,
           item.tax,
-          "USDT",
+          process.env.TOKEN_SYMBOL || "TOKEN",
           item.amount_usd
         );
       } else {
         await callsContractError(
           item.artist_id,
           item.amount_usd,
-          "USDT",
+          process.env.TOKEN_SYMBOL || "TOKEN",
           "Error in transfer token"
         );
       }
