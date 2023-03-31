@@ -1,19 +1,6 @@
-import {
-  KeyPair,
-  keyStores,
-  Near,
-  Account,
-  utils,
-  ConnectedWalletAccount,
-  WalletConnection,
-  Contract,
-} from "near-api-js";
-import { CONFIG } from "./utils";
-import {
-  Action,
-  createTransaction,
-  functionCall,
-} from "near-api-js/lib/transaction";
+import { KeyPair, keyStores, Near, Account, utils, ConnectedWalletAccount, WalletConnection, Contract } from "near-api-js";
+import { CONFIG, getNearPrice } from "./utils";
+import { Action, createTransaction, functionCall } from "near-api-js/lib/transaction";
 import BN from "bn.js";
 import { PublicKey } from "near-api-js/lib/utils";
 import axios from "axios";
@@ -33,12 +20,7 @@ const account = new AccountService(near.connection, address);
 const updateTasaNear = async () => {
   try {
     console.log("UPDATE TASA INIT");
-    const nearPrice: any = await axios.get(
-      "https://api.coingecko.com/api/v3/simple/price?ids=near&vs_currencies=usd"
-    );
-
-    if (!nearPrice.data.near.usd) throw new Error("Error near usd");
-    const nearUsd = nearPrice.data.near.usd;
+    const nearUsd = await getNearPrice();
 
     console.log(nearUsd);
 
@@ -68,38 +50,20 @@ const updateTasaNear = async () => {
   }
 };
 
-async function createTransactionFn(
-  receiverId: string,
-  actions: Action[],
-  userAddress: string,
-  near: Near
-) {
+async function createTransactionFn(receiverId: string, actions: Action[], userAddress: string, near: Near) {
   const walletConnection = new WalletConnection(near, null);
-  const wallet = new ConnectedWalletAccount(
-    walletConnection,
-    near.connection,
-    userAddress
-  );
+  const wallet = new ConnectedWalletAccount(walletConnection, near.connection, userAddress);
 
   if (!wallet || !near) {
     throw new Error(`No active wallet or NEAR connection.`);
   }
 
-  const localKey = await near?.connection.signer.getPublicKey(
-    userAddress,
-    near.connection.networkId
-  );
+  const localKey = await near?.connection.signer.getPublicKey(userAddress, near.connection.networkId);
 
-  const accessKey = await wallet.accessKeyForTransaction(
-    receiverId,
-    actions,
-    localKey
-  );
+  const accessKey = await wallet.accessKeyForTransaction(receiverId, actions, localKey);
 
   if (!accessKey) {
-    throw new Error(
-      `Cannot find matching key for transaction sent to ${receiverId}`
-    );
+    throw new Error(`Cannot find matching key for transaction sent to ${receiverId}`);
   }
 
   const block = await near?.connection.provider.block({
@@ -117,14 +81,7 @@ async function createTransactionFn(
   //const nonce = accessKey.access_key.nonce + nonceOffset
   const nonce = ++accessKey.access_key.nonce;
 
-  return createTransaction(
-    userAddress,
-    publicKey,
-    receiverId,
-    nonce,
-    actions,
-    blockHash
-  );
+  return createTransaction(userAddress, publicKey, receiverId, nonce, actions, blockHash);
 }
 
 export { updateTasaNear };

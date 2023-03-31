@@ -1,13 +1,4 @@
-import {
-  KeyPair,
-  keyStores,
-  Near,
-  Account,
-  utils,
-  ConnectedWalletAccount,
-  WalletConnection,
-  Contract,
-} from "near-api-js";
+import { KeyPair, keyStores, Near, Account, utils, ConnectedWalletAccount, WalletConnection, Contract } from "near-api-js";
 import {
   ftGetTokensMetadata,
   fetchAllPools,
@@ -20,12 +11,8 @@ import {
   DCLSwap,
   getDCLPoolId,
 } from "@ref-finance/ref-sdk";
-import { CONFIG } from "./utils";
-import {
-  Action,
-  createTransaction,
-  functionCall,
-} from "near-api-js/lib/transaction";
+import { CONFIG, getNearPrice } from "./utils";
+import { Action, createTransaction, functionCall } from "near-api-js/lib/transaction";
 import BN from "bn.js";
 import { PublicKey } from "near-api-js/lib/utils";
 import axios from "axios";
@@ -35,6 +22,7 @@ const address = process.env.ADDRESS_SWAP!;
 const privateKey = process.env.PRIVATE_KEY_SWAP!;
 const tokenIn = process.env.TOKEN_IN!;
 const tokenOut = process.env.TOKEN_OUT!;
+const decimals = Number(process.env.DECIMALS!);
 
 const keyStore = new keyStores.InMemoryKeyStore();
 
@@ -76,13 +64,7 @@ const sendTransferToken = async (toAddress: string, amount: number) => {
   }
 };
 
-const callsContractEnd = async (
-  artistId: string,
-  amountNear: string,
-  taxNear: string,
-  ftToken: string,
-  amountUsd: string
-) => {
+const callsContractEnd = async (artistId: string, amountNear: string, taxNear: string, ftToken: string, amountUsd: string) => {
   try {
     console.log("CALL CONTRACT INIT");
 
@@ -117,12 +99,7 @@ const callsContractEnd = async (
   }
 };
 
-const callsContractError = async (
-  artistId: string,
-  amount: string,
-  ftToken: String,
-  arg: String
-) => {
+const callsContractError = async (artistId: string, amount: string, ftToken: String, arg: String) => {
   try {
     console.log("CALL CONTRACT INIT");
 
@@ -160,17 +137,9 @@ const swapNear = async (amount: number) => {
   try {
     const tokensMetadata = await ftGetTokensMetadata([tokenIn, tokenOut]);
 
-    const transactionsRef = await getTxSwapRef(
-      tokensMetadata[tokenIn],
-      tokensMetadata[tokenOut],
-      amount
-    );
+    const transactionsRef = await getTxSwapRef(tokensMetadata[tokenIn], tokensMetadata[tokenOut], amount);
 
-    const transactionsDcl = await getTxSwapDCL(
-      tokensMetadata[tokenIn],
-      tokensMetadata[tokenOut],
-      amount
-    );
+    const transactionsDcl = await getTxSwapDCL(tokensMetadata[tokenIn], tokensMetadata[tokenOut], amount);
 
     const minAmountRef = await getMinAmountOut(transactionsRef);
     const minAmountDcl = await getMinAmountOut(transactionsDcl);
@@ -203,14 +172,7 @@ const swapNear = async (amount: number) => {
     if (tokenIn.includes("wrap.")) {
       const trx = await createTransactionFn(
         tokenIn,
-        [
-          await functionCall(
-            "near_deposit",
-            {},
-            new BN("300000000000000"),
-            new BN(String(utils.format.parseNearAmount(String(amount))))
-          ),
-        ],
+        [await functionCall("near_deposit", {}, new BN("300000000000000"), new BN(String(utils.format.parseNearAmount(String(amount)))))],
         address,
         near
       );
@@ -223,12 +185,7 @@ const swapNear = async (amount: number) => {
         return await createTransactionFn(
           tx.receiverId,
           tx.functionCalls.map((fc: any) => {
-            return functionCall(
-              fc.methodName,
-              fc.args,
-              fc.gas,
-              new BN(String(utils.format.parseNearAmount(fc.amount)))
-            );
+            return functionCall(fc.methodName, fc.args, fc.gas, new BN(String(utils.format.parseNearAmount(fc.amount))));
           }),
           address,
           near
@@ -268,11 +225,7 @@ const swapNear = async (amount: number) => {
   }
 };
 
-const getTxSwapRef = async (
-  tokenMetadataA: any,
-  tokenMetadataB: any,
-  amount: number
-) => {
+const getTxSwapRef = async (tokenMetadataA: any, tokenMetadataB: any, amount: number) => {
   const { ratedPools, unRatedPools, simplePools } = await fetchAllPools();
 
   const stablePools: Pool[] = unRatedPools.concat(ratedPools);
@@ -307,19 +260,8 @@ const getTxSwapRef = async (
   return transactionsRef;
 };
 
-const getTxSwapDCL = async (
-  tokenMetadataA: any,
-  tokenMetadataB: any,
-  amount: number
-) => {
-  const nearPrice: any = await axios.get(
-    "https://api.coingecko.com/api/v3/simple/price?ids=NEAR&vs_currencies=USD"
-  );
-
-  if (!nearPrice.data.near.usd) return false;
-  const nearUsd = nearPrice.data.near.usd;
-
-  console.log(nearUsd);
+const getTxSwapDCL = async (tokenMetadataA: any, tokenMetadataB: any, amount: number) => {
+  const nearUsd = await getNearPrice();
 
   const fee = 2000;
 
@@ -333,9 +275,7 @@ const getTxSwapDCL = async (
     },
     Swap: {
       pool_ids,
-      min_output_amount: String(
-        Math.round(amount * nearUsd * 0.99 * Math.pow(10, 6))
-      ),
+      min_output_amount: String(Math.round(amount * nearUsd * 0.99 * Math.pow(10, decimals))),
     },
     AccountId: process.env.TOKEN_IN!,
   });
@@ -351,8 +291,11 @@ function esperar(ms: number) {
 
 const getMinAmountOut = async (trxSwap: any) => {
   const transaction = trxSwap.find(
-    (element: { functionCalls: { methodName: string }[] }) =>
-      element.functionCalls[0].methodName === "ft_transfer_call"
+    (element: {
+      functionCalls: {
+        methodName: string;
+      }[];
+    }) => element.functionCalls[0].methodName === "ft_transfer_call"
   );
 
   if (!transaction) return false;
@@ -416,7 +359,7 @@ const activateAccount = async (toAddress: string) => {
 
     if (!result.transaction.hash) return false;
     console.log("ACTIVATE END");
-    return result.transaction.hash as string;
+    return true;
   } catch (error) {
     console.log(error);
     console.log("ACTIVATE ERR");
@@ -424,38 +367,20 @@ const activateAccount = async (toAddress: string) => {
   }
 };
 
-async function createTransactionFn(
-  receiverId: string,
-  actions: Action[],
-  userAddress: string,
-  near: Near
-) {
+async function createTransactionFn(receiverId: string, actions: Action[], userAddress: string, near: Near) {
   const walletConnection = new WalletConnection(near, null);
-  const wallet = new ConnectedWalletAccount(
-    walletConnection,
-    near.connection,
-    userAddress
-  );
+  const wallet = new ConnectedWalletAccount(walletConnection, near.connection, userAddress);
 
   if (!wallet || !near) {
     throw new Error(`No active wallet or NEAR connection.`);
   }
 
-  const localKey = await near?.connection.signer.getPublicKey(
-    userAddress,
-    near.connection.networkId
-  );
+  const localKey = await near?.connection.signer.getPublicKey(userAddress, near.connection.networkId);
 
-  const accessKey = await wallet.accessKeyForTransaction(
-    receiverId,
-    actions,
-    localKey
-  );
+  const accessKey = await wallet.accessKeyForTransaction(receiverId, actions, localKey);
 
   if (!accessKey) {
-    throw new Error(
-      `Cannot find matching key for transaction sent to ${receiverId}`
-    );
+    throw new Error(`Cannot find matching key for transaction sent to ${receiverId}`);
   }
 
   const block = await near?.connection.provider.block({
@@ -473,20 +398,7 @@ async function createTransactionFn(
   //const nonce = accessKey.access_key.nonce + nonceOffset
   const nonce = ++accessKey.access_key.nonce;
 
-  return createTransaction(
-    userAddress,
-    publicKey,
-    receiverId,
-    nonce,
-    actions,
-    blockHash
-  );
+  return createTransaction(userAddress, publicKey, receiverId, nonce, actions, blockHash);
 }
 
-export {
-  swapNear,
-  sendTransferToken,
-  activateAccount,
-  callsContractEnd,
-  callsContractError,
-};
+export { swapNear, sendTransferToken, activateAccount, callsContractEnd, callsContractError };

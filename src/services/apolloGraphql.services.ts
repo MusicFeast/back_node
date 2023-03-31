@@ -41,4 +41,29 @@ const getAutoSwapsApollo = async () => {
   }
 };
 
-export { getAutoSwapsApollo };
+const getWalletArtistId = async (id: string) => {
+  try {
+    const QUERY_APOLLO = gql`
+      query QUERY_APOLLO($artist_id: String) {
+        artist(id: $artist_id: String) {
+          wallet
+        }
+      }
+    `;
+
+    const res = await clientApollo.query({
+      query: QUERY_APOLLO,
+      variables: { artist_id: id },
+    });
+
+    const data = res.data.artist;
+
+    if (!data) return false;
+
+    return data.wallet;
+  } catch (error) {
+    return false;
+  }
+};
+
+export { getAutoSwapsApollo, getWalletArtistId };
