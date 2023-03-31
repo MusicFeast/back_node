@@ -7,7 +7,6 @@ import axios from "axios";
 import {
   sendTransferToken,
   swapNear,
-  swapNearDCL,
   activateAccount,
   callsContractEnd,
   callsContractError,
@@ -51,30 +50,44 @@ const AutoSwap = async () => {
 
     if (!(totalAmountNear > 0)) return console.log("AUTOSWAP NOT AMOUNT NEAR");
 
-    const resultSwap = await swapNearDCL(1);
+    const resultSwap = await swapNear(totalAmountNear);
 
     console.log(resultSwap);
-
-    return;
 
     if (!resultSwap) return console.log("AUTOSWAP END");
 
     for (const item of dataForSwap) {
       console.log("ENTRO SWAPPPPP");
+      console.log(item);
+      if (
+        Number(item.amount_near) <= 0 &&
+        Number(item.amount_usd) <= 0 &&
+        Number(item.tax) <= 0
+      ) {
+        console.log("continue");
+        continue;
+      }
+
       let addressSend;
 
       if (Number(item.artist_id) > 0) {
-        const conexion = await dbConnect();
-        const response = await conexion.query(
-          "SELECT *\
-          FROM backend_artist \
-          where id_collection = $1",
-          [item.artist_id]
-        );
+        if (Number(item.artist_id) === 12) {
+          addressSend = "jcb.near";
+        } else if (Number(item.artist_id) === 13) {
+          addressSend = "blakeblizzy.near";
+        } else {
+          const conexion = await dbConnect();
+          const response = await conexion.query(
+            "SELECT *\
+            FROM backend_artist \
+            where id_collection = $1",
+            [item.artist_id]
+          );
 
-        if (response.rows.length === 0) continue;
+          if (response.rows.length === 0) continue;
 
-        addressSend = response.rows[0].account_near;
+          addressSend = response.rows[0].account_near;
+        }
       } else {
         addressSend = process.env.ADDRESS_SEND;
       }
@@ -90,13 +103,9 @@ const AutoSwap = async () => {
 
       const sendUserEnd = Math.round(item.amount_usd * Math.pow(10, decimals));
 
-      console.log(sendUserEnd);
-
-      if (!sendUserEnd) continue;
-
       let result;
 
-      if (item.amount_usd > 0) {
+      if (item.sendUserEnd > 0) {
         const activated = await activateAccount(addressSend);
 
         console.log("ACTIVATED", activated);

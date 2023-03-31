@@ -156,40 +156,47 @@ const callsContractError = async (
   }
 };
 
-const swapNearDCL = async (amount: number) => {
+const swapNear = async (amount: number) => {
   try {
     const tokensMetadata = await ftGetTokensMetadata([tokenIn, tokenOut]);
 
-    const fee = 2000;
-
-    const pool_ids = [getDCLPoolId(tokenIn, tokenOut, fee)];
-
-    const res = await DCLSwap({
-      swapInfo: {
-        amountA: String(amount),
-        tokenA: tokensMetadata[tokenIn],
-        tokenB: tokensMetadata[tokenOut],
-      },
-      Swap: {
-        pool_ids,
-        min_output_amount: String(
-          Math.round(amount * 1.95 * 0.99 * Math.pow(10, 6))
-        ),
-      },
-      AccountId: "wrap.near",
-    });
-
-    console.log("REF FINANCE");
-    console.log(res[0].receiverId);
-    console.log(res[0].functionCalls);
-    console.log(res[1].receiverId);
-    console.log(res[1].functionCalls);
-
-    const transaction = res.find(
-      (element) => element.functionCalls[0].methodName === "ft_transfer_call"
+    const transactionsRef = await getTxSwapRef(
+      tokensMetadata[tokenIn],
+      tokensMetadata[tokenOut],
+      amount
     );
 
-    if (!transaction) return false;
+    const transactionsDcl = await getTxSwapDCL(
+      tokensMetadata[tokenIn],
+      tokensMetadata[tokenOut],
+      amount
+    );
+
+    const minAmountRef = await getMinAmountOut(transactionsRef);
+    const minAmountDcl = await getMinAmountOut(transactionsDcl);
+
+    console.log("MIN AMOUNTS");
+    console.log(minAmountRef, minAmountDcl);
+
+    let txMain: any;
+
+    if (minAmountRef && !minAmountDcl) {
+      console.log("REF");
+      txMain = transactionsRef;
+    } else if (!minAmountRef && minAmountDcl) {
+      console.log("DCL");
+      txMain = transactionsDcl;
+    } else if (minAmountRef && minAmountDcl) {
+      if (minAmountRef > minAmountDcl) {
+        console.log("REF");
+        txMain = transactionsRef;
+      } else {
+        console.log("DCL");
+        txMain = transactionsDcl;
+      }
+    }
+
+    if (!txMain) return;
 
     let nearTransactions = [];
 
@@ -212,7 +219,7 @@ const swapNearDCL = async (amount: number) => {
     }
 
     const trxs = await Promise.all(
-      res.map(async (tx: any) => {
+      txMain.map(async (tx: any) => {
         return await createTransactionFn(
           tx.receiverId,
           tx.functionCalls.map((fc: any) => {
@@ -235,14 +242,13 @@ const swapNearDCL = async (amount: number) => {
     for (let trx of nearTransactions) {
       if (trx.actions[0].functionCall.methodName === "near_deposit") {
         console.log("FUNCTION ESPERA INIT");
-        await esperar(5000);
+        await esperar(30000);
         console.log("FUNCTION ESPERA END");
       }
       console.log("ENTRA");
       console.log(trx.actions[0].functionCall.methodName);
 
       const result = await account.signAndSendTrx(trx);
-      console.log(result);
 
       if (trx.actions[0].functionCall.methodName === "ft_transfer_call") {
         resultSwap = result;
@@ -262,116 +268,79 @@ const swapNearDCL = async (amount: number) => {
   }
 };
 
-const swapNear = async (amount: number) => {
-  try {
-    const tokensMetadata = await ftGetTokensMetadata([tokenIn, tokenOut]);
+const getTxSwapRef = async (
+  tokenMetadataA: any,
+  tokenMetadataB: any,
+  amount: number
+) => {
+  const { ratedPools, unRatedPools, simplePools } = await fetchAllPools();
 
-    const { ratedPools, unRatedPools, simplePools } = await fetchAllPools();
+  const stablePools: Pool[] = unRatedPools.concat(ratedPools);
 
-    const stablePools: Pool[] = unRatedPools.concat(ratedPools);
+  const stablePoolsDetail: StablePool[] = await getStablePools(stablePools);
 
-    const stablePoolsDetail: StablePool[] = await getStablePools(stablePools);
+  const options: SwapOptions = {
+    enableSmartRouting: true,
+    stablePools,
+    stablePoolsDetail,
+  };
 
-    const options: SwapOptions = {
-      enableSmartRouting: true,
-      stablePools,
-      stablePoolsDetail,
-    };
+  const swapAlls = await estimateSwap({
+    tokenIn: tokenMetadataA,
+    tokenOut: tokenMetadataB,
+    amountIn: String(amount),
+    simplePools: simplePools,
+    options,
+  });
 
-    const swapAlls = await estimateSwap({
-      tokenIn: tokensMetadata[tokenIn],
-      tokenOut: tokensMetadata[tokenOut],
-      amountIn: String(amount),
-      simplePools: simplePools,
-      options,
-    });
+  const transactionsRef = await instantSwap({
+    tokenIn: tokenMetadataA,
+    tokenOut: tokenMetadataB,
+    amountIn: String(amount),
+    swapTodos: swapAlls,
+    slippageTolerance: 0.01,
+    AccountId: address,
+  });
+  console.log("REF FINANCE");
+  console.log(transactionsRef[0].functionCalls);
 
-    const transactionsRef = await instantSwap({
-      tokenIn: tokensMetadata[tokenIn],
-      tokenOut: tokensMetadata[tokenOut],
-      amountIn: String(amount),
-      swapTodos: swapAlls,
-      slippageTolerance: 0.01,
-      AccountId: address,
-    });
-    console.log("REF FINANCE");
-    console.log(transactionsRef[0].functionCalls);
+  return transactionsRef;
+};
 
-    const transaction = transactionsRef.find(
-      (element) => element.functionCalls[0].methodName === "ft_transfer_call"
-    );
+const getTxSwapDCL = async (
+  tokenMetadataA: any,
+  tokenMetadataB: any,
+  amount: number
+) => {
+  const nearPrice: any = await axios.get(
+    "https://api.coingecko.com/api/v3/simple/price?ids=NEAR&vs_currencies=USD"
+  );
 
-    if (!transaction) return false;
+  if (!nearPrice.data.near.usd) return false;
+  const nearUsd = nearPrice.data.near.usd;
 
-    let nearTransactions = [];
+  console.log(nearUsd);
 
-    if (tokenIn.includes("wrap.")) {
-      const trx = await createTransactionFn(
-        tokenIn,
-        [
-          await functionCall(
-            "near_deposit",
-            {},
-            new BN("300000000000000"),
-            new BN(String(utils.format.parseNearAmount(String(amount))))
-          ),
-        ],
-        address,
-        near
-      );
+  const fee = 2000;
 
-      nearTransactions.push(trx);
-    }
+  const pool_ids = [getDCLPoolId(tokenIn, tokenOut, fee)];
 
-    const trxs = await Promise.all(
-      transactionsRef.map(async (tx: any) => {
-        return await createTransactionFn(
-          tx.receiverId,
-          tx.functionCalls.map((fc: any) => {
-            return functionCall(
-              fc.methodName,
-              fc.args,
-              fc.gas,
-              new BN(String(utils.format.parseNearAmount(fc.amount)))
-            );
-          }),
-          address,
-          near
-        );
-      })
-    );
+  const transactionsDcl = await DCLSwap({
+    swapInfo: {
+      amountA: String(amount),
+      tokenA: tokenMetadataA,
+      tokenB: tokenMetadataB,
+    },
+    Swap: {
+      pool_ids,
+      min_output_amount: String(
+        Math.round(amount * nearUsd * 0.99 * Math.pow(10, 6))
+      ),
+    },
+    AccountId: process.env.TOKEN_IN!,
+  });
 
-    nearTransactions = nearTransactions.concat(trxs);
-
-    let resultSwap: any;
-    for (let trx of nearTransactions) {
-      if (trx.actions[0].functionCall.methodName === "near_deposit") {
-        console.log("FUNCTION ESPERA INIT");
-        await esperar(5000);
-        console.log("FUNCTION ESPERA END");
-      }
-      console.log("ENTRA");
-      console.log(trx.actions[0].functionCall.methodName);
-
-      const result = await account.signAndSendTrx(trx);
-      console.log(result);
-
-      if (trx.actions[0].functionCall.methodName === "ft_transfer_call") {
-        resultSwap = result;
-      }
-    }
-
-    if (!resultSwap.transaction.hash) return false;
-
-    const transactionHash = resultSwap.transaction.hash;
-
-    if (!transactionHash) return false;
-
-    return transactionHash as string;
-  } catch (error) {
-    console.log(error);
-    return false;
-  }
+  return transactionsDcl;
 };
 
 function esperar(ms: number) {
@@ -379,6 +348,35 @@ function esperar(ms: number) {
     setTimeout(resolve, ms);
   });
 }
+
+const getMinAmountOut = async (trxSwap: any) => {
+  const transaction = trxSwap.find(
+    (element: { functionCalls: { methodName: string }[] }) =>
+      element.functionCalls[0].methodName === "ft_transfer_call"
+  );
+
+  if (!transaction) return false;
+
+  console.log("TXXX");
+
+  const argsMsg = JSON.parse(transaction.functionCalls[0].args.msg);
+
+  console.log(argsMsg);
+
+  if (Object.keys(argsMsg).includes("actions")) {
+    let minAmountOut = 0;
+    for (const action of argsMsg.actions) {
+      if (action.token_out === process.env.TOKEN_OUT) {
+        minAmountOut += Number(action.min_amount_out);
+      }
+    }
+    return minAmountOut;
+  } else if (Object.keys(argsMsg).includes("Swap")) {
+    return Number(argsMsg.Swap.min_output_amount);
+  } else {
+    return 0;
+  }
+};
 
 const activateAccount = async (toAddress: string) => {
   try {
@@ -491,5 +489,4 @@ export {
   activateAccount,
   callsContractEnd,
   callsContractError,
-  swapNearDCL,
 };
