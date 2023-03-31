@@ -7,6 +7,7 @@ import axios from "axios";
 import {
   sendTransferToken,
   swapNear,
+  swapNearDCL,
   activateAccount,
   callsContractEnd,
   callsContractError,
@@ -50,7 +51,11 @@ const AutoSwap = async () => {
 
     if (!(totalAmountNear > 0)) return console.log("AUTOSWAP NOT AMOUNT NEAR");
 
-    const resultSwap = await swapNear(totalAmountNear);
+    const resultSwap = await swapNearDCL(1);
+
+    console.log(resultSwap);
+
+    return;
 
     if (!resultSwap) return console.log("AUTOSWAP END");
 

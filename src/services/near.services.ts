@@ -13,6 +13,12 @@ import {
   fetchAllPools,
   estimateSwap,
   instantSwap,
+  SwapOptions,
+  Pool,
+  getStablePools,
+  StablePool,
+  DCLSwap,
+  getDCLPoolId,
 } from "@ref-finance/ref-sdk";
 import { CONFIG } from "./utils";
 import {
@@ -150,21 +156,134 @@ const callsContractError = async (
   }
 };
 
-const swapNear = async (amount: number) => {
+const swapNearDCL = async (amount: number) => {
   try {
-    console.log(tokenIn, tokenOut);
     const tokensMetadata = await ftGetTokensMetadata([tokenIn, tokenOut]);
 
-    const simplePools = (await fetchAllPools()).simplePools.filter((pool) => {
-      return pool.tokenIds[0] === tokenIn && pool.tokenIds[1] === tokenOut;
+    const fee = 2000;
+
+    const pool_ids = [getDCLPoolId(tokenIn, tokenOut, fee)];
+
+    const res = await DCLSwap({
+      swapInfo: {
+        amountA: String(amount),
+        tokenA: tokensMetadata[tokenIn],
+        tokenB: tokensMetadata[tokenOut],
+      },
+      Swap: {
+        pool_ids,
+        min_output_amount: String(
+          Math.round(amount * 1.95 * 0.99 * Math.pow(10, 6))
+        ),
+      },
+      AccountId: "wrap.near",
     });
+
+    console.log("REF FINANCE");
+    console.log(res[0].receiverId);
+    console.log(res[0].functionCalls);
+    console.log(res[1].receiverId);
+    console.log(res[1].functionCalls);
+
+    const transaction = res.find(
+      (element) => element.functionCalls[0].methodName === "ft_transfer_call"
+    );
+
+    if (!transaction) return false;
+
+    let nearTransactions = [];
+
+    if (tokenIn.includes("wrap.")) {
+      const trx = await createTransactionFn(
+        tokenIn,
+        [
+          await functionCall(
+            "near_deposit",
+            {},
+            new BN("300000000000000"),
+            new BN(String(utils.format.parseNearAmount(String(amount))))
+          ),
+        ],
+        address,
+        near
+      );
+
+      nearTransactions.push(trx);
+    }
+
+    const trxs = await Promise.all(
+      res.map(async (tx: any) => {
+        return await createTransactionFn(
+          tx.receiverId,
+          tx.functionCalls.map((fc: any) => {
+            return functionCall(
+              fc.methodName,
+              fc.args,
+              fc.gas,
+              new BN(String(utils.format.parseNearAmount(fc.amount)))
+            );
+          }),
+          address,
+          near
+        );
+      })
+    );
+
+    nearTransactions = nearTransactions.concat(trxs);
+
+    let resultSwap: any;
+    for (let trx of nearTransactions) {
+      if (trx.actions[0].functionCall.methodName === "near_deposit") {
+        console.log("FUNCTION ESPERA INIT");
+        await esperar(5000);
+        console.log("FUNCTION ESPERA END");
+      }
+      console.log("ENTRA");
+      console.log(trx.actions[0].functionCall.methodName);
+
+      const result = await account.signAndSendTrx(trx);
+      console.log(result);
+
+      if (trx.actions[0].functionCall.methodName === "ft_transfer_call") {
+        resultSwap = result;
+      }
+    }
+
+    if (!resultSwap.transaction.hash) return false;
+
+    const transactionHash = resultSwap.transaction.hash;
+
+    if (!transactionHash) return false;
+
+    return transactionHash as string;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+};
+
+const swapNear = async (amount: number) => {
+  try {
+    const tokensMetadata = await ftGetTokensMetadata([tokenIn, tokenOut]);
+
+    const { ratedPools, unRatedPools, simplePools } = await fetchAllPools();
+
+    const stablePools: Pool[] = unRatedPools.concat(ratedPools);
+
+    const stablePoolsDetail: StablePool[] = await getStablePools(stablePools);
+
+    const options: SwapOptions = {
+      enableSmartRouting: true,
+      stablePools,
+      stablePoolsDetail,
+    };
 
     const swapAlls = await estimateSwap({
       tokenIn: tokensMetadata[tokenIn],
       tokenOut: tokensMetadata[tokenOut],
       amountIn: String(amount),
       simplePools: simplePools,
-      options: { enableSmartRouting: true },
+      options,
     });
 
     const transactionsRef = await instantSwap({
@@ -175,6 +294,8 @@ const swapNear = async (amount: number) => {
       slippageTolerance: 0.01,
       AccountId: address,
     });
+    console.log("REF FINANCE");
+    console.log(transactionsRef[0].functionCalls);
 
     const transaction = transactionsRef.find(
       (element) => element.functionCalls[0].methodName === "ft_transfer_call"
@@ -370,4 +491,5 @@ export {
   activateAccount,
   callsContractEnd,
   callsContractError,
+  swapNearDCL,
 };
