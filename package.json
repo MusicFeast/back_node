@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon ./src/app.ts",
     "build": "rm -rf dist/* && tsc",
-    "start": "npm run build && node ./dist/app.js"
+    "start": "node ./dist/app.js"
   },
   "keywords": [],
   "author": "",
