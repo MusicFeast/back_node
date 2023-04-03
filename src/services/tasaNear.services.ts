@@ -17,12 +17,37 @@ const near = new Near(CONFIG(keyStore));
 
 const account = new AccountService(near.connection, address);
 
+async function getTasa() {
+  try {
+    const contract: any = new Contract(account, process.env.SMART_CONTRACT!, {
+      changeMethods: [],
+      viewMethods: ["get_tasa"],
+    });
+
+    const price = await contract.get_tasa();
+
+    return price;
+  } catch (error) {
+    return false;
+  }
+}
+
 const updateTasaNear = async () => {
   try {
     console.log("UPDATE TASA INIT");
     const nearUsd = await getNearPrice();
 
-    console.log(nearUsd);
+    const tasaActual = await getTasa();
+
+    let diference = ((tasaActual - nearUsd) / nearUsd) * 100;
+
+    if (diference < 0) {
+      diference = diference * -1;
+    }
+
+    console.log(nearUsd, tasaActual, diference);
+
+    if (diference < 2) return false;
 
     const trx = await createTransactionFn(
       process.env.SMART_CONTRACT!,
