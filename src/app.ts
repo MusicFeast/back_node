@@ -56,5 +56,5 @@ const startUpdateTasa = () => {
   }, 900000);
 };
 
-// setTimeout(startAutoSwap, 30000);
+setTimeout(startAutoSwap, 30000);
 startUpdateTasa();
