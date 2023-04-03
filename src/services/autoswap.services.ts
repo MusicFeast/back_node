@@ -78,7 +78,7 @@ const AutoSwap = async () => {
         await callsContractEnd(item.artist_id, item.amount_near, item.tax, process.env.TOKEN_SYMBOL || "TOKEN", item.amount_usd);
       } else {
         console.log("CALLS ERROR");
-        await callsContractError(item.artist_id, item.amount_usd, process.env.TOKEN_SYMBOL || "TOKEN", "Error in transfer token");
+        await callsContractError(item.artist_id, item.amount_usd, item.amount_near, process.env.TOKEN_SYMBOL || "TOKEN", "Error in transfer token");
       }
     }
     console.log("AUTOSWAP END");

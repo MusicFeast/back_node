@@ -43,6 +43,7 @@ const getAutoSwapsApollo = async () => {
 
 const getWalletArtistId = async (id: string) => {
   try {
+    if (id === "0") return process.env.ADDRES_SEND;
     const QUERY_APOLLO = gql`
       query QUERY_APOLLO($artist_id: String) {
         artist(id: $artist_id) {

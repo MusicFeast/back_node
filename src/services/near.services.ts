@@ -99,7 +99,7 @@ const callsContractEnd = async (artistId: string, amountNear: string, taxNear: s
   }
 };
 
-const callsContractError = async (artistId: string, amount: string, ftToken: String, arg: String) => {
+const callsContractError = async (artistId: string, amount: string, amountNear: string, ftToken: String, arg: String) => {
   try {
     console.log("CALL CONTRACT INIT");
 
@@ -111,6 +111,7 @@ const callsContractError = async (artistId: string, amount: string, ftToken: Str
           {
             artist_id: artistId,
             amount,
+            amount_near: amountNear,
             ft_token: ftToken,
             arg,
           },
