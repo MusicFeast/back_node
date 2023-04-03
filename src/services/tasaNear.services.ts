@@ -45,8 +45,6 @@ const updateTasaNear = async () => {
       diference = diference * -1;
     }
 
-    console.log(nearUsd, tasaActual, diference);
-
     if (diference < 2) return false;
 
     const trx = await createTransactionFn(
