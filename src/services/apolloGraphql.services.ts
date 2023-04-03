@@ -45,7 +45,7 @@ const getWalletArtistId = async (id: string) => {
   try {
     const QUERY_APOLLO = gql`
       query QUERY_APOLLO($artist_id: String) {
-        artist(id: $artist_id: String) {
+        artist(id: $artist_id) {
           wallet
         }
       }
@@ -58,10 +58,13 @@ const getWalletArtistId = async (id: string) => {
 
     const data = res.data.artist;
 
+    console.log(data);
+
     if (!data) return false;
 
     return data.wallet;
   } catch (error) {
+    console.log(error);
     return false;
   }
 };

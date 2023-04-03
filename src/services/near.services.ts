@@ -323,6 +323,7 @@ const getMinAmountOut = async (trxSwap: any) => {
 
 const activateAccount = async (toAddress: string) => {
   try {
+    if (!toAddress) return false;
     const contract: any = new Contract(
       account, // the account object that is connecting
       tokenOut,
