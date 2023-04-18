@@ -13,6 +13,7 @@ const clientApollo = new ApolloClient({
 
 const getAutoSwapsApollo = async () => {
   try {
+    let data;
     const QUERY_APOLLO = gql`
       query QUERY_APOLLO {
         autoswaps {
@@ -32,7 +33,7 @@ const getAutoSwapsApollo = async () => {
       variables: {},
     });
 
-    const data = res.data.autoswaps;
+    data = res.data.autoswaps;
 
     console.log(data);
     return data;

@@ -83,6 +83,7 @@ const AutoSwap = async () => {
         await callsContractError(item.artist_id, item.amount_usd, item.amount_near, process.env.TOKEN_SYMBOL || "TOKEN", "Error in transfer token");
       }
     }
+    totalAmountNear = 0;
     console.log("AUTOSWAP END");
   } catch (error) {
     console.log("err");
