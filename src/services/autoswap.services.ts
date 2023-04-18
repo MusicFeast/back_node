@@ -1,3 +1,4 @@
+import "dotenv/config";
 import dbConnect from "../config/postgres";
 import fetch from "cross-fetch";
 import { utils } from "near-api-js";
@@ -12,6 +13,7 @@ const decimals = Number(process.env.DECIMALS);
 
 const AutoSwap = async () => {
   try {
+    console.log("START AUTO SWAP");
     // const nearUsd = await getNearPrice();
 
     const dataForSwap = await getAutoSwapsApollo();
