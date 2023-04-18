@@ -85,6 +85,7 @@ const AutoSwap = async () => {
   } catch (error) {
     console.log("err");
     console.log(error);
+    return;
     // AutoSwap();
   }
 };
