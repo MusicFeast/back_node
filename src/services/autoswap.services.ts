@@ -16,7 +16,7 @@ const AutoSwap = async () => {
     console.log("START AUTO SWAP");
     // const nearUsd = await getNearPrice();
 
-    const dataForSwap = await getAutoSwapsApollo();
+    let dataForSwap = await getAutoSwapsApollo();
 
     let totalAmountNear = 0;
 
@@ -32,7 +32,7 @@ const AutoSwap = async () => {
 
     if (!(totalAmountNear > 0)) return console.log("AUTOSWAP NOT AMOUNT NEAR");
 
-    const resultSwap = await swapNear(totalAmountNear);
+    let resultSwap = await swapNear(totalAmountNear);
 
     console.log(resultSwap);
 
@@ -52,18 +52,18 @@ const AutoSwap = async () => {
 
       console.log(item.amount_usd);
 
-      const sendUserEnd = Math.round(item.amount_usd * Math.pow(10, decimals));
+      let sendUserEnd = Math.round(item.amount_usd * Math.pow(10, decimals));
 
       console.log("SEND", sendUserEnd);
 
       let result: string | boolean;
 
       if (sendUserEnd > 0) {
-        const addressSend = await getWalletArtistId(item.artist_id);
+        let addressSend = await getWalletArtistId(item.artist_id);
 
         console.log("ADDRESS SEND", addressSend);
 
-        const activated = await activateAccount(addressSend);
+        let activated = await activateAccount(addressSend);
 
         console.log("ACTIVATED", activated);
 
