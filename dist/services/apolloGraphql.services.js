@@ -25,6 +25,7 @@ const clientApollo = new client_1.ApolloClient({
 });
 const getAutoSwapsApollo = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        let data;
         const QUERY_APOLLO = (0, graphql_tag_1.default) `
       query QUERY_APOLLO {
         autoswaps {
@@ -42,7 +43,7 @@ const getAutoSwapsApollo = () => __awaiter(void 0, void 0, void 0, function* () 
             query: QUERY_APOLLO,
             variables: {},
         });
-        const data = res.data.autoswaps;
+        data = res.data.autoswaps;
         // console.log(data);
         return data;
     }

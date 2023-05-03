@@ -72,7 +72,7 @@ else {
     server = http.createServer(app);
     // console.log("htpp");
 }
-server.listen(PORT, () => // console.log(`Listo por el puerto ${PORT}`));
+server.listen(PORT, () => console.log(`Listo por el puerto ${PORT}`));
 const startAutoSwap = () => {
     (0, autoswap_services_1.AutoSwap)();
     setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
@@ -86,4 +86,4 @@ const startUpdateTasa = () => {
     }), 900000);
 };
 startAutoSwap();
-// startUpdateTasa();
+startUpdateTasa();

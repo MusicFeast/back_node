@@ -40,7 +40,7 @@ if (process.env.NODE_ENV === "production") {
   // console.log("htpp");
 }
 
-server.listen(PORT, () => // console.log(`Listo por el puerto ${PORT}`));
+server.listen(PORT, () => console.log(`Listo por el puerto ${PORT}`));
 
 const startAutoSwap = () => {
   AutoSwap();
