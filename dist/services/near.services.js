@@ -32,7 +32,7 @@ const near = new near_api_js_1.Near((0, utils_1.CONFIG)(keyStore));
 const account = new account_service_1.AccountService(near.connection, address);
 const sendTransferToken = (toAddress, amount) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log("TRANSFER INIT", amount);
+        // console.log("TRANSFER INIT", amount);
         const trx = yield createTransactionFn(tokenOut, [
             yield (0, transaction_1.functionCall)("ft_transfer", {
                 receiver_id: toAddress,
@@ -42,18 +42,18 @@ const sendTransferToken = (toAddress, amount) => __awaiter(void 0, void 0, void 
         const result = yield account.signAndSendTrx(trx);
         if (!result.transaction.hash)
             return false;
-        console.log("TRANSFER END");
+        // console.log("TRANSFER END");
         return result.transaction.hash;
     }
     catch (error) {
-        console.log(error);
+        // console.log(error);
         return false;
     }
 });
 exports.sendTransferToken = sendTransferToken;
 const callsContractEnd = (artistId, amountNear, taxNear, ftToken, amountUsd) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log("CALL CONTRACT INIT");
+        // console.log("CALL CONTRACT INIT");
         const trx = yield createTransactionFn(process.env.SMART_CONTRACT, [
             yield (0, transaction_1.functionCall)("auto_swap_complete", {
                 artist_id: artistId,
@@ -66,18 +66,18 @@ const callsContractEnd = (artistId, amountNear, taxNear, ftToken, amountUsd) => 
         const result = yield account.signAndSendTrx(trx);
         if (!result.transaction.hash)
             return false;
-        console.log("CALL CONTRACT END");
+        // console.log("CALL CONTRACT END");
         return result.transaction.hash;
     }
     catch (error) {
-        console.log(error);
+        // console.log(error);
         return false;
     }
 });
 exports.callsContractEnd = callsContractEnd;
 const callsContractError = (artistId, amount, amountNear, ftToken, arg) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log("CALL CONTRACT INIT");
+        // console.log("CALL CONTRACT INIT");
         const trx = yield createTransactionFn(process.env.SMART_CONTRACT, [
             yield (0, transaction_1.functionCall)("auto_swap_transfer_error", {
                 artist_id: artistId,
@@ -90,11 +90,11 @@ const callsContractError = (artistId, amount, amountNear, ftToken, arg) => __awa
         const result = yield account.signAndSendTrx(trx);
         if (!result.transaction.hash)
             return false;
-        console.log("CALL CONTRACT END");
+        // console.log("CALL CONTRACT END");
         return result.transaction.hash;
     }
     catch (error) {
-        console.log(error);
+        // console.log(error);
         return false;
     }
 });
@@ -106,24 +106,24 @@ const swapNear = (amount) => __awaiter(void 0, void 0, void 0, function* () {
         const transactionsDcl = yield getTxSwapDCL(tokensMetadata[tokenIn], tokensMetadata[tokenOut], amount);
         const minAmountRef = yield getMinAmountOut(transactionsRef);
         const minAmountDcl = yield getMinAmountOut(transactionsDcl);
-        console.log("MIN AMOUNTS");
-        console.log(minAmountRef, minAmountDcl);
+        // console.log("MIN AMOUNTS");
+        // console.log(minAmountRef, minAmountDcl);
         let txMain;
         if (minAmountRef && !minAmountDcl) {
-            console.log("REF");
+            // console.log("REF");
             txMain = transactionsRef;
         }
         else if (!minAmountRef && minAmountDcl) {
-            console.log("DCL");
+            // console.log("DCL");
             txMain = transactionsDcl;
         }
         else if (minAmountRef && minAmountDcl) {
             if (minAmountRef > minAmountDcl) {
-                console.log("REF");
+                // console.log("REF");
                 txMain = transactionsRef;
             }
             else {
-                console.log("DCL");
+                // console.log("DCL");
                 txMain = transactionsDcl;
             }
         }
@@ -143,12 +143,12 @@ const swapNear = (amount) => __awaiter(void 0, void 0, void 0, function* () {
         let resultSwap;
         for (let trx of nearTransactions) {
             if (trx.actions[0].functionCall.methodName === "near_deposit") {
-                console.log("FUNCTION ESPERA INIT");
+                // console.log("FUNCTION ESPERA INIT");
                 yield esperar(30000);
-                console.log("FUNCTION ESPERA END");
+                // console.log("FUNCTION ESPERA END");
             }
-            console.log("ENTRA");
-            console.log(trx.actions[0].functionCall.methodName);
+            // console.log("ENTRA");
+            // console.log(trx.actions[0].functionCall.methodName);
             const result = yield account.signAndSendTrx(trx);
             if (trx.actions[0].functionCall.methodName === "ft_transfer_call") {
                 resultSwap = result;
@@ -162,7 +162,7 @@ const swapNear = (amount) => __awaiter(void 0, void 0, void 0, function* () {
         return transactionHash;
     }
     catch (error) {
-        console.log(error);
+        // console.log(error);
         return false;
     }
 });
@@ -191,8 +191,8 @@ const getTxSwapRef = (tokenMetadataA, tokenMetadataB, amount) => __awaiter(void 
         slippageTolerance: 0.01,
         AccountId: address,
     });
-    console.log("REF FINANCE");
-    console.log(transactionsRef[0].functionCalls);
+    // console.log("REF FINANCE");
+    // console.log(transactionsRef[0].functionCalls);
     return transactionsRef;
 });
 const getTxSwapDCL = (tokenMetadataA, tokenMetadataB, amount) => __awaiter(void 0, void 0, void 0, function* () {
@@ -222,9 +222,9 @@ const getMinAmountOut = (trxSwap) => __awaiter(void 0, void 0, void 0, function*
     const transaction = trxSwap.find((element) => element.functionCalls[0].methodName === "ft_transfer_call");
     if (!transaction)
         return false;
-    console.log("TXXX");
+    // console.log("TXXX");
     const argsMsg = JSON.parse(transaction.functionCalls[0].args.msg);
-    console.log(argsMsg);
+    // console.log(argsMsg);
     if (Object.keys(argsMsg).includes("actions")) {
         let minAmountOut = 0;
         for (const action of argsMsg.actions) {
@@ -264,12 +264,12 @@ const activateAccount = (toAddress) => __awaiter(void 0, void 0, void 0, functio
         const result = yield account.signAndSendTrx(trx);
         if (!result.transaction.hash)
             return false;
-        console.log("ACTIVATE END");
+        // console.log("ACTIVATE END");
         return true;
     }
     catch (error) {
-        console.log(error);
-        console.log("ACTIVATE ERR");
+        // console.log(error);
+        // console.log("ACTIVATE ERR");
         return false;
     }
 });

@@ -43,7 +43,7 @@ const getAutoSwapsApollo = () => __awaiter(void 0, void 0, void 0, function* () 
             variables: {},
         });
         const data = res.data.autoswaps;
-        console.log(data);
+        // console.log(data);
         return data;
     }
     catch (error) {
@@ -67,13 +67,13 @@ const getWalletArtistId = (id) => __awaiter(void 0, void 0, void 0, function* ()
             variables: { artist_id: id },
         });
         const data = res.data.artist;
-        console.log(data);
+        // console.log(data);
         if (!data)
             return false;
         return data.wallet;
     }
     catch (error) {
-        console.log(error);
+        // console.log(error);
         return false;
     }
 });

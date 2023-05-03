@@ -13,7 +13,7 @@ const decimals = Number(process.env.DECIMALS);
 
 const AutoSwap = async () => {
   try {
-    console.log("START AUTO SWAP");
+    // console.log("START AUTO SWAP");
     // const nearUsd = await getNearPrice();
 
     let dataForSwap = await getAutoSwapsApollo();
@@ -28,19 +28,19 @@ const AutoSwap = async () => {
         totalAmountNear += Number(utils.format.formatNearAmount(forSwap.amount_near));
       }
     }
-    console.log("TotalAmount: " + totalAmountNear);
+    // console.log("TotalAmount: " + totalAmountNear);
 
-    if (!(totalAmountNear > 0)) return console.log("AUTOSWAP NOT AMOUNT NEAR");
+    if (!(totalAmountNear > 0)) return; // console.log("AUTOSWAP NOT AMOUNT NEAR");
 
     let resultSwap = await swapNear(totalAmountNear);
 
-    console.log(resultSwap);
+    // console.log(resultSwap);
 
-    if (!resultSwap) return console.log("AUTOSWAP END RESULT SWAP");
+    if (!resultSwap) return; // console.log("AUTOSWAP END RESULT SWAP");
 
     for (const item of dataForSwap) {
-      console.log("ENTRO SWAPPPPP");
-      console.log(item);
+      // console.log("ENTRO SWAPPPPP");
+      // console.log(item);
       if (Number(item.amount_near) <= 0 && Number(item.amount_usd) <= 0 && Number(item.tax) <= 0) {
         continue;
       } else if (Number(item.amount_near) < 0 || Number(item.amount_usd) < 0) {
@@ -50,22 +50,22 @@ const AutoSwap = async () => {
       // const sendUser =
       //   Number(utils.format.formatNearAmount(item.amount)) * nearUsd;
 
-      console.log(item.amount_usd);
+      // console.log(item.amount_usd);
 
       let sendUserEnd = Math.round(item.amount_usd * Math.pow(10, decimals));
 
-      console.log("SEND", sendUserEnd);
+      // console.log("SEND", sendUserEnd);
 
       let result: string | boolean;
 
       if (sendUserEnd > 0) {
         let addressSend = await getWalletArtistId(item.artist_id);
 
-        console.log("ADDRESS SEND", addressSend);
+        // console.log("ADDRESS SEND", addressSend);
 
         let activated = await activateAccount(addressSend);
 
-        console.log("ACTIVATED", activated);
+        // console.log("ACTIVATED", activated);
 
         if (!activated || !addressSend) {
           result = false;
@@ -79,15 +79,15 @@ const AutoSwap = async () => {
       if (result) {
         await callsContractEnd(item.artist_id, item.amount_near, item.tax, process.env.TOKEN_SYMBOL || "TOKEN", item.amount_usd);
       } else {
-        console.log("CALLS ERROR");
+        // console.log("CALLS ERROR");
         await callsContractError(item.artist_id, item.amount_usd, item.amount_near, process.env.TOKEN_SYMBOL || "TOKEN", "Error in transfer token");
       }
     }
     totalAmountNear = 0;
-    console.log("AUTOSWAP END");
+    // console.log("AUTOSWAP END");
   } catch (error) {
-    console.log("err");
-    console.log(error);
+    // console.log("err");
+    // console.log(error);
     return;
     // AutoSwap();
   }

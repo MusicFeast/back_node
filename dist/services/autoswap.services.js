@@ -17,7 +17,7 @@ const apolloGraphql_services_1 = require("./apolloGraphql.services");
 const decimals = Number(process.env.DECIMALS);
 const AutoSwap = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log("START AUTO SWAP");
+        // console.log("START AUTO SWAP");
         // const nearUsd = await getNearPrice();
         const dataForSwap = yield (0, apolloGraphql_services_1.getAutoSwapsApollo)();
         let totalAmountNear = 0;
@@ -31,16 +31,16 @@ const AutoSwap = () => __awaiter(void 0, void 0, void 0, function* () {
                 totalAmountNear += Number(near_api_js_1.utils.format.formatNearAmount(forSwap.amount_near));
             }
         }
-        console.log("TotalAmount: " + totalAmountNear);
+        // console.log("TotalAmount: " + totalAmountNear);
         if (!(totalAmountNear > 0))
-            return console.log("AUTOSWAP NOT AMOUNT NEAR");
+            return // console.log("AUTOSWAP NOT AMOUNT NEAR");
         const resultSwap = yield (0, near_services_1.swapNear)(totalAmountNear);
-        console.log(resultSwap);
+        // console.log(resultSwap);
         if (!resultSwap)
-            return console.log("AUTOSWAP END RESULT SWAP");
+            return // console.log("AUTOSWAP END RESULT SWAP");
         for (const item of dataForSwap) {
-            console.log("ENTRO SWAPPPPP");
-            console.log(item);
+            // console.log("ENTRO SWAPPPPP");
+            // console.log(item);
             if (Number(item.amount_near) <= 0 && Number(item.amount_usd) <= 0 && Number(item.tax) <= 0) {
                 continue;
             }
@@ -49,15 +49,15 @@ const AutoSwap = () => __awaiter(void 0, void 0, void 0, function* () {
             }
             // const sendUser =
             //   Number(utils.format.formatNearAmount(item.amount)) * nearUsd;
-            console.log(item.amount_usd);
+            // console.log(item.amount_usd);
             const sendUserEnd = Math.round(item.amount_usd * Math.pow(10, decimals));
-            console.log("SEND", sendUserEnd);
+            // console.log("SEND", sendUserEnd);
             let result;
             if (sendUserEnd > 0) {
                 const addressSend = yield (0, apolloGraphql_services_1.getWalletArtistId)(item.artist_id);
-                console.log("ADDRESS SEND", addressSend);
+                // console.log("ADDRESS SEND", addressSend);
                 const activated = yield (0, near_services_1.activateAccount)(addressSend);
-                console.log("ACTIVATED", activated);
+                // console.log("ACTIVATED", activated);
                 if (!activated || !addressSend) {
                     result = false;
                 }
@@ -72,15 +72,15 @@ const AutoSwap = () => __awaiter(void 0, void 0, void 0, function* () {
                 yield (0, near_services_1.callsContractEnd)(item.artist_id, item.amount_near, item.tax, process.env.TOKEN_SYMBOL || "TOKEN", item.amount_usd);
             }
             else {
-                console.log("CALLS ERROR");
+                // console.log("CALLS ERROR");
                 yield (0, near_services_1.callsContractError)(item.artist_id, item.amount_usd, item.amount_near, process.env.TOKEN_SYMBOL || "TOKEN", "Error in transfer token");
             }
         }
-        console.log("AUTOSWAP END");
+        // console.log("AUTOSWAP END");
     }
     catch (error) {
-        console.log("err");
-        console.log(error);
+        // console.log("err");
+        // console.log(error);
         return;
         // AutoSwap();
     }

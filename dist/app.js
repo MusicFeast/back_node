@@ -52,10 +52,10 @@ app.use((0, morgan_1.default)("dev"));
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 (0, postgres_1.default)().then(() => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("Conexion DB Ready");
+    // console.log("Conexion DB Ready");
 }));
 let server;
-console.log(process.env.NODE_ENV);
+// console.log(process.env.NODE_ENV);
 if (process.env.NODE_ENV === "production") {
     const privateKey = fs.readFileSync("/etc/letsencrypt/live/defix3.com/privkey.pem", "utf8");
     const certificate = fs.readFileSync("/etc/letsencrypt/live/defix3.com/cert.pem", "utf8");
@@ -66,13 +66,13 @@ if (process.env.NODE_ENV === "production") {
         ca: ca,
     };
     server = https.createServer(credentials, app);
-    console.log("htpps");
+    // console.log("htpps");
 }
 else {
     server = http.createServer(app);
-    console.log("htpp");
+    // console.log("htpp");
 }
-server.listen(PORT, () => console.log(`Listo por el puerto ${PORT}`));
+server.listen(PORT, () => // console.log(`Listo por el puerto ${PORT}`));
 const startAutoSwap = () => {
     (0, autoswap_services_1.AutoSwap)();
     setInterval(() => __awaiter(void 0, void 0, void 0, function* () {

@@ -18,11 +18,11 @@ app.use(cors());
 app.use(express.json());
 
 dbConnect().then(async () => {
-  console.log("Conexion DB Ready");
+  // console.log("Conexion DB Ready");
 });
 
 let server;
-console.log(process.env.NODE_ENV);
+// console.log(process.env.NODE_ENV);
 if (process.env.NODE_ENV === "production") {
   const privateKey = fs.readFileSync("/etc/letsencrypt/live/defix3.com/privkey.pem", "utf8");
   const certificate = fs.readFileSync("/etc/letsencrypt/live/defix3.com/cert.pem", "utf8");
@@ -34,13 +34,13 @@ if (process.env.NODE_ENV === "production") {
     ca: ca,
   };
   server = https.createServer(credentials, app);
-  console.log("htpps");
+  // console.log("htpps");
 } else {
   server = http.createServer(app);
-  console.log("htpp");
+  // console.log("htpp");
 }
 
-server.listen(PORT, () => console.log(`Listo por el puerto ${PORT}`));
+server.listen(PORT, () => // console.log(`Listo por el puerto ${PORT}`));
 
 const startAutoSwap = () => {
   AutoSwap();

@@ -34,7 +34,7 @@ async function getTasa() {
 
 const updateTasaNear = async () => {
   try {
-    console.log("UPDATE TASA INIT");
+    // console.log("UPDATE TASA INIT");
     const nearUsd = await getNearPrice();
 
     const tasaActual = await getTasa();
@@ -65,10 +65,10 @@ const updateTasaNear = async () => {
     const result = await account.signAndSendTrx(trx);
 
     if (!result.transaction.hash) return false;
-    console.log("UPDATE TASA END");
+    // console.log("UPDATE TASA END");
     return result.transaction.hash as string;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return false;
   }
 };

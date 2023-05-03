@@ -43,7 +43,7 @@ function getTasa() {
 }
 const updateTasaNear = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        console.log("UPDATE TASA INIT");
+        // console.log("UPDATE TASA INIT");
         const nearUsd = yield (0, utils_1.getNearPrice)();
         const tasaActual = yield getTasa();
         let diference = ((tasaActual - nearUsd) / nearUsd) * 100;
@@ -60,11 +60,11 @@ const updateTasaNear = () => __awaiter(void 0, void 0, void 0, function* () {
         const result = yield account.signAndSendTrx(trx);
         if (!result.transaction.hash)
             return false;
-        console.log("UPDATE TASA END");
+        // console.log("UPDATE TASA END");
         return result.transaction.hash;
     }
     catch (error) {
-        console.log(error);
+        // console.log(error);
         return false;
     }
 });

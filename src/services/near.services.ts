@@ -34,7 +34,7 @@ const account = new AccountService(near.connection, address);
 
 const sendTransferToken = async (toAddress: string, amount: number) => {
   try {
-    console.log("TRANSFER INIT", amount);
+    // console.log("TRANSFER INIT", amount);
 
     const trx = await createTransactionFn(
       tokenOut,
@@ -56,17 +56,17 @@ const sendTransferToken = async (toAddress: string, amount: number) => {
     const result = await account.signAndSendTrx(trx);
 
     if (!result.transaction.hash) return false;
-    console.log("TRANSFER END");
+    // console.log("TRANSFER END");
     return result.transaction.hash as string;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return false;
   }
 };
 
 const callsContractEnd = async (artistId: string, amountNear: string, taxNear: string, ftToken: string, amountUsd: string) => {
   try {
-    console.log("CALL CONTRACT INIT");
+    // console.log("CALL CONTRACT INIT");
 
     const trx = await createTransactionFn(
       process.env.SMART_CONTRACT!,
@@ -91,17 +91,17 @@ const callsContractEnd = async (artistId: string, amountNear: string, taxNear: s
     const result = await account.signAndSendTrx(trx);
 
     if (!result.transaction.hash) return false;
-    console.log("CALL CONTRACT END");
+    // console.log("CALL CONTRACT END");
     return result.transaction.hash as string;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return false;
   }
 };
 
 const callsContractError = async (artistId: string, amount: string, amountNear: string, ftToken: String, arg: String) => {
   try {
-    console.log("CALL CONTRACT INIT");
+    // console.log("CALL CONTRACT INIT");
 
     const trx = await createTransactionFn(
       process.env.SMART_CONTRACT!,
@@ -126,10 +126,10 @@ const callsContractError = async (artistId: string, amount: string, amountNear: 
     const result = await account.signAndSendTrx(trx);
 
     if (!result.transaction.hash) return false;
-    console.log("CALL CONTRACT END");
+    // console.log("CALL CONTRACT END");
     return result.transaction.hash as string;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return false;
   }
 };
@@ -145,23 +145,23 @@ const swapNear = async (amount: number) => {
     const minAmountRef = await getMinAmountOut(transactionsRef);
     const minAmountDcl = await getMinAmountOut(transactionsDcl);
 
-    console.log("MIN AMOUNTS");
-    console.log(minAmountRef, minAmountDcl);
+    // console.log("MIN AMOUNTS");
+    // console.log(minAmountRef, minAmountDcl);
 
     let txMain: any;
 
     if (minAmountRef && !minAmountDcl) {
-      console.log("REF");
+      // console.log("REF");
       txMain = transactionsRef;
     } else if (!minAmountRef && minAmountDcl) {
-      console.log("DCL");
+      // console.log("DCL");
       txMain = transactionsDcl;
     } else if (minAmountRef && minAmountDcl) {
       if (minAmountRef > minAmountDcl) {
-        console.log("REF");
+        // console.log("REF");
         txMain = transactionsRef;
       } else {
-        console.log("DCL");
+        // console.log("DCL");
         txMain = transactionsDcl;
       }
     }
@@ -199,12 +199,12 @@ const swapNear = async (amount: number) => {
     let resultSwap: any;
     for (let trx of nearTransactions) {
       if (trx.actions[0].functionCall.methodName === "near_deposit") {
-        console.log("FUNCTION ESPERA INIT");
+        // console.log("FUNCTION ESPERA INIT");
         await esperar(30000);
-        console.log("FUNCTION ESPERA END");
+        // console.log("FUNCTION ESPERA END");
       }
-      console.log("ENTRA");
-      console.log(trx.actions[0].functionCall.methodName);
+      // console.log("ENTRA");
+      // console.log(trx.actions[0].functionCall.methodName);
 
       const result = await account.signAndSendTrx(trx);
 
@@ -221,7 +221,7 @@ const swapNear = async (amount: number) => {
 
     return transactionHash as string;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return false;
   }
 };
@@ -255,8 +255,8 @@ const getTxSwapRef = async (tokenMetadataA: any, tokenMetadataB: any, amount: nu
     slippageTolerance: 0.01,
     AccountId: address,
   });
-  console.log("REF FINANCE");
-  console.log(transactionsRef[0].functionCalls);
+  // console.log("REF FINANCE");
+  // console.log(transactionsRef[0].functionCalls);
 
   return transactionsRef;
 };
@@ -301,11 +301,11 @@ const getMinAmountOut = async (trxSwap: any) => {
 
   if (!transaction) return false;
 
-  console.log("TXXX");
+  // console.log("TXXX");
 
   const argsMsg = JSON.parse(transaction.functionCalls[0].args.msg);
 
-  console.log(argsMsg);
+  // console.log(argsMsg);
 
   if (Object.keys(argsMsg).includes("actions")) {
     let minAmountOut = 0;
@@ -360,11 +360,11 @@ const activateAccount = async (toAddress: string) => {
     const result = await account.signAndSendTrx(trx);
 
     if (!result.transaction.hash) return false;
-    console.log("ACTIVATE END");
+    // console.log("ACTIVATE END");
     return true;
   } catch (error) {
-    console.log(error);
-    console.log("ACTIVATE ERR");
+    // console.log(error);
+    // console.log("ACTIVATE ERR");
     return false;
   }
 };

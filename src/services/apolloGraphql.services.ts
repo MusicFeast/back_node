@@ -35,7 +35,7 @@ const getAutoSwapsApollo = async () => {
 
     data = res.data.autoswaps;
 
-    console.log(data);
+    // console.log(data);
     return data;
   } catch (error) {
     throw new Error("error");
@@ -60,13 +60,13 @@ const getWalletArtistId = async (id: string) => {
 
     const data = res.data.artist;
 
-    console.log(data);
+    // console.log(data);
 
     if (!data) return false;
 
     return data.wallet;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return false;
   }
 };
