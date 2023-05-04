@@ -11,7 +11,7 @@ import { getNearPrice } from "./utils";
 
 const decimals = Number(process.env.DECIMALS);
 
-const AutoSwap = async () => {
+const AutoSwap = async (res: Response) => {
   try {
     // console.log("START AUTO SWAP");
     // const nearUsd = await getNearPrice();
@@ -30,13 +30,13 @@ const AutoSwap = async () => {
     }
     // console.log("TotalAmount: " + totalAmountNear);
 
-    if (!(totalAmountNear > 0)) return; // console.log("AUTOSWAP NOT AMOUNT NEAR");
+    if (!(totalAmountNear > 0)) return res.json(); // console.log("AUTOSWAP NOT AMOUNT NEAR");
 
     let resultSwap = await swapNear(totalAmountNear);
 
     // console.log(resultSwap);
 
-    if (!resultSwap) return; // console.log("AUTOSWAP END RESULT SWAP");
+    if (!resultSwap) return res.json(); // console.log("AUTOSWAP END RESULT SWAP");
 
     for (const item of dataForSwap) {
       // console.log("ENTRO SWAPPPPP");
@@ -84,11 +84,12 @@ const AutoSwap = async () => {
       }
     }
     totalAmountNear = 0;
+    res.json();
     // console.log("AUTOSWAP END");
   } catch (error) {
     // console.log("err");
     // console.log(error);
-    return;
+    return res.json();
     // AutoSwap();
   }
 };

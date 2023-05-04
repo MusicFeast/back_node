@@ -1,18 +1,18 @@
 import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
 import gql from "graphql-tag";
 
-const cache = new InMemoryCache();
-
-const clientApollo = new ApolloClient({
-  cache: cache,
-  link: new HttpLink({
-    uri: process.env.GRAPH_URL,
-    fetch: fetch,
-  }),
-});
-
 const getAutoSwapsApollo = async () => {
   try {
+    const cache = new InMemoryCache();
+
+    const clientApollo = new ApolloClient({
+      cache: cache,
+      link: new HttpLink({
+        uri: process.env.GRAPH_URL,
+        fetch: fetch,
+      }),
+    });
+
     let data;
     const QUERY_APOLLO = gql`
       query QUERY_APOLLO {
@@ -44,6 +44,16 @@ const getAutoSwapsApollo = async () => {
 
 const getWalletArtistId = async (id: string) => {
   try {
+    const cache = new InMemoryCache();
+
+    const clientApollo = new ApolloClient({
+      cache: cache,
+      link: new HttpLink({
+        uri: process.env.GRAPH_URL,
+        fetch: fetch,
+      }),
+    });
+
     if (id === "0") return process.env.ADDRES_SEND;
     const QUERY_APOLLO = gql`
       query QUERY_APOLLO($artist_id: String) {
