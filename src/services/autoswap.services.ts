@@ -30,13 +30,13 @@ const AutoSwap = async (res: Response) => {
     }
     // console.log("TotalAmount: " + totalAmountNear);
 
-    if (!(totalAmountNear > 0)) return res.json(); // console.log("AUTOSWAP NOT AMOUNT NEAR");
+    //if (!(totalAmountNear > 0)) return res.json(); // console.log("AUTOSWAP NOT AMOUNT NEAR");
 
     let resultSwap = await swapNear(totalAmountNear);
 
     // console.log(resultSwap);
 
-    if (!resultSwap) return res.json; // console.log("AUTOSWAP END RESULT SWAP");
+    //if (!resultSwap) return res.json; // console.log("AUTOSWAP END RESULT SWAP");
 
     for (const item of dataForSwap) {
       // console.log("ENTRO SWAPPPPP");
@@ -89,7 +89,7 @@ const AutoSwap = async (res: Response) => {
   } catch (error) {
     // console.log("err");
     // console.log(error);
-    //return res.json();
+    //res.json();
     // AutoSwap();
   }
 };
