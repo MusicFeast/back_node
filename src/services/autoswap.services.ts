@@ -1,13 +1,13 @@
 import "dotenv/config";
-import dbConnect from "../config/postgres";
-import fetch from "cross-fetch";
+//import dbConnect from "../config/postgres";
+//import fetch from "cross-fetch";
 import { utils } from "near-api-js";
-import BN from "bn.js";
-import { PublicKey } from "near-api-js/lib/utils";
-import axios from "axios";
+//import BN from "bn.js";
+//import { PublicKey } from "near-api-js/lib/utils";
+//import axios from "axios";
 import { sendTransferToken, swapNear, activateAccount, callsContractEnd, callsContractError } from "./near.services";
 import { getAutoSwapsApollo, getWalletArtistId } from "./apolloGraphql.services";
-import { getNearPrice } from "./utils";
+//import { getNearPrice } from "./utils";
 
 const decimals = Number(process.env.DECIMALS);
 
@@ -36,7 +36,7 @@ const AutoSwap = async (res: Response) => {
 
     // console.log(resultSwap);
 
-    if (!resultSwap) return res.json(); // console.log("AUTOSWAP END RESULT SWAP");
+    if (!resultSwap) return res.json; // console.log("AUTOSWAP END RESULT SWAP");
 
     for (const item of dataForSwap) {
       // console.log("ENTRO SWAPPPPP");
@@ -84,12 +84,12 @@ const AutoSwap = async (res: Response) => {
       }
     }
     totalAmountNear = 0;
-    res.json();
+    //res.json();
     // console.log("AUTOSWAP END");
   } catch (error) {
     // console.log("err");
     // console.log(error);
-    return res.json();
+    //return res.json();
     // AutoSwap();
   }
 };

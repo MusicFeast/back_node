@@ -25,11 +25,11 @@ let server;
 
 app.post("/start-autoswap", AutoSwap);
 
-// console.log(process.env.NODE_ENV);
-if (process.env.NODE_ENV === "production") {
-  const privateKey = fs.readFileSync("/etc/letsencrypt/live/defix3.com/privkey.pem", "utf8");
-  const certificate = fs.readFileSync("/etc/letsencrypt/live/defix3.com/cert.pem", "utf8");
-  const ca = fs.readFileSync("/etc/letsencrypt/live/defix3.com/chain.pem", "utf8");
+console.log(process.env.NODE_ENV);
+if (process.env.ENV === "prod") {
+  const privateKey = fs.readFileSync("/etc/letsencrypt/live/musicfeast.io/privkey.pem", "utf8");
+  const certificate = fs.readFileSync("/etc/letsencrypt/live/musicfeast.io/cert.pem", "utf8");
+  const ca = fs.readFileSync("/etc/letsencrypt/live/musicfeast.io/chain.pem", "utf8");
 
   const credentials = {
     key: privateKey,
@@ -37,10 +37,10 @@ if (process.env.NODE_ENV === "production") {
     ca: ca,
   };
   server = https.createServer(credentials, app);
-  // console.log("htpps");
+   console.log("htpps");
 } else {
   server = http.createServer(app);
-  // console.log("htpp");
+   console.log("htpp");
 }
 
 server.listen(PORT, () => console.log(`Listo por el puerto ${PORT}`));
