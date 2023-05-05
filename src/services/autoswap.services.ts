@@ -8,13 +8,13 @@ import { utils } from "near-api-js";
 import { sendTransferToken, swapNear, activateAccount, callsContractEnd, callsContractError } from "./near.services";
 import { getAutoSwapsApollo, getWalletArtistId } from "./apolloGraphql.services";
 //import { getNearPrice } from "./utils";
+import { Request, Response } from "express";
 
 const decimals = Number(process.env.DECIMALS);
 
-const AutoSwap = async (res: Response) => {
+const AutoSwap = async (req: Request, res: Response) => {
   try {
-    // console.log("START AUTO SWAP");
-    // const nearUsd = await getNearPrice();
+    console.log("1");
 
     let dataForSwap = await getAutoSwapsApollo();
 
@@ -28,16 +28,20 @@ const AutoSwap = async (res: Response) => {
         totalAmountNear += Number(utils.format.formatNearAmount(forSwap.amount_near));
       }
     }
-    // console.log("TotalAmount: " + totalAmountNear);
 
-    //if (!(totalAmountNear > 0)) return res.json(); // console.log("AUTOSWAP NOT AMOUNT NEAR");
+    if (!(totalAmountNear > 0)) {
+      res.json("Amount 0");
+      return;
+    } // console.log("AUTOSWAP NOT AMOUNT NEAR");
 
     let resultSwap = await swapNear(totalAmountNear);
 
     // console.log(resultSwap);
 
-    //if (!resultSwap) return res.json; // console.log("AUTOSWAP END RESULT SWAP");
-
+    if (!resultSwap) {
+      res.status(204).json("No se ejecuto el Swap");
+      return;
+    } // console.log("AUTOSWAP END RESULT SWAP");
     for (const item of dataForSwap) {
       // console.log("ENTRO SWAPPPPP");
       // console.log(item);
@@ -84,12 +88,15 @@ const AutoSwap = async (res: Response) => {
       }
     }
     totalAmountNear = 0;
-    //res.json();
+    console.log("END");
+    res.json();
+    return;
     // console.log("AUTOSWAP END");
   } catch (error) {
     // console.log("err");
     // console.log(error);
-    //res.json();
+    res.status(500).json();
+    return;
     // AutoSwap();
   }
 };

@@ -136,6 +136,7 @@ const callsContractError = async (artistId: string, amount: string, amountNear: 
 
 const swapNear = async (amount: number) => {
   try {
+    console.log(amount);
     const tokensMetadata = await ftGetTokensMetadata([tokenIn, tokenOut]);
 
     const transactionsRef = await getTxSwapRef(tokensMetadata[tokenIn], tokensMetadata[tokenOut], amount);
@@ -217,11 +218,13 @@ const swapNear = async (amount: number) => {
 
     const transactionHash = resultSwap.transaction.hash;
 
+    console.log(transactionHash);
+
     if (!transactionHash) return false;
 
     return transactionHash as string;
   } catch (error) {
-    // console.log(error);
+    console.log(error);
     return false;
   }
 };
