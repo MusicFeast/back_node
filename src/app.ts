@@ -7,6 +7,7 @@ import dbConnect from "./config/postgres";
 import * as http from "http";
 import * as https from "https";
 import { AutoSwap } from "./services/autoswap.services";
+import { sendRedeemer } from "./services/redeemService/redeemController";
 import { updateTasaNear } from "./services/tasaNear.services";
 const fs = require("fs");
 
@@ -24,6 +25,7 @@ dbConnect().then(async () => {
 let server;
 
 app.post("/start-autoswap", AutoSwap);
+app.post("/start-redeem", sendRedeemer);
 
 console.log(process.env.NODE_ENV);
 if (process.env.ENV === "prod") {
@@ -37,10 +39,10 @@ if (process.env.ENV === "prod") {
     ca: ca,
   };
   server = https.createServer(credentials, app);
-   console.log("htpps");
+  console.log("htpps");
 } else {
   server = http.createServer(app);
-   console.log("htpp");
+  console.log("htpp");
 }
 
 server.listen(PORT, () => console.log(`Listo por el puerto ${PORT}`));
