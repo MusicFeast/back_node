@@ -6,6 +6,7 @@ import { getListRedeemer, getWalletArtistId } from "./apolloGraphql";
 //import { getNearPrice } from "./utils";
 import { Request, Response } from "express";
 import axios from "axios";
+import dbConnect from "../../config/postgres";
 
 const sendRedeemer = async (req: Request, res: Response) => {
   try {
@@ -14,6 +15,17 @@ const sendRedeemer = async (req: Request, res: Response) => {
     for (const data of dataRedeem) {
       const extra = data.extra;
       console.log(JSON.parse(extra));
+
+      let conexion = await dbConnect();
+      const resultados = await conexion.query("select * from backend_orderredeem where token_id = $1", [data.id]);
+
+      console.log(resultados.rows);
+
+      if (resultados.rows.length === 0) {
+      }
+
+      const dataOrder = resultados.rows[0];
+
       const orderPost = {
         campaignId: "string",
         confirmationEmailAddress: "string",
@@ -25,7 +37,7 @@ const sendRedeemer = async (req: Request, res: Response) => {
           city: "string",
           state: "string",
           postalCode: "string",
-          country: "string",
+          country: dataOrder.country,
           phone: "string",
         },
         customerEmailAddress: "string",
@@ -127,10 +139,10 @@ const sendRedeemer = async (req: Request, res: Response) => {
         })
         .then((response) => {
           console.log("Connect Success");
-          console.log(response);
+          // console.log(response);
         })
         .catch((err) => {
-          console.error(err);
+          // console.error(err);
         });
     }
 
