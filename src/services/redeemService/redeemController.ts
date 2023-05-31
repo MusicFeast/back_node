@@ -22,21 +22,22 @@ const sendRedeemer = async (req: Request, res: Response) => {
       console.log(resultados.rows);
 
       if (resultados.rows.length === 0) {
+        continue;
       }
 
       const dataOrder = resultados.rows[0];
 
       const orderPost = {
-        campaignId: "string",
+        campaignId: "123456",
         confirmationEmailAddress: "string",
         customerAddress: {
-          name: "string",
-          nameLine2: "string",
-          addressLine1: "string",
-          addressLine2: "string",
-          city: "string",
-          state: "string",
-          postalCode: "string",
+          name: dataOrder.city,
+          nameLine2: dataOrder.city,
+          addressLine1: dataOrder.street_address,
+          addressLine2: dataOrder.street_address,
+          city: dataOrder.city,
+          state: dataOrder.state,
+          postalCode: dataOrder.postal,
           country: dataOrder.country,
           phone: "string",
         },
@@ -142,6 +143,7 @@ const sendRedeemer = async (req: Request, res: Response) => {
           // console.log(response);
         })
         .catch((err) => {
+          console.log("Error");
           // console.error(err);
         });
     }
