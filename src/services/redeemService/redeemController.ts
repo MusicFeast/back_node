@@ -39,10 +39,10 @@ const sendRedeemer = async (req: Request, res: Response) => {
           state: dataOrder.state,
           postalCode: dataOrder.postal,
           country: dataOrder.country,
-          phone: "string",
+          phone: dataOrder.phone_number,
         },
         customerEmailAddress: "string",
-        customId: "string",
+        customId: dataOrder.CatalogProductId,
         holdFulfillmentUntilDate: "2023-05-30T13:13:05.116Z",
         isTest: true,
         orderItemGroups: [
