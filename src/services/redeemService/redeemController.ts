@@ -11,10 +11,10 @@ import dbConnect from "../../config/postgres";
 const sendRedeemer = async (req: Request, res: Response) => {
   try {
     let dataRedeem = await getListRedeemer();
+    let i = 1;
 
     for (const data of dataRedeem) {
       const extra = data.extra;
-      console.log(JSON.parse(extra));
 
       let conexion = await dbConnect();
       const resultados = await conexion.query("select * from backend_orderredeem where token_id = $1", [data.id]);
@@ -25,25 +25,29 @@ const sendRedeemer = async (req: Request, res: Response) => {
         continue;
       }
 
+      console.log(JSON.parse(extra));
+
       const dataOrder = resultados.rows[0];
+
+      const addresUser = {
+        name: dataOrder.city,
+        nameLine2: dataOrder.city,
+        addressLine1: dataOrder.street_address,
+        addressLine2: dataOrder.street_address,
+        city: dataOrder.city,
+        state: dataOrder.state,
+        postalCode: dataOrder.postal,
+        country: dataOrder.country,
+        phone: dataOrder.phone_number,
+      };
 
       const orderPost = {
         campaignId: "123456",
-        confirmationEmailAddress: "string",
-        customerAddress: {
-          name: dataOrder.city,
-          nameLine2: dataOrder.city,
-          addressLine1: dataOrder.street_address,
-          addressLine2: dataOrder.street_address,
-          city: dataOrder.city,
-          state: dataOrder.state,
-          postalCode: dataOrder.postal,
-          country: dataOrder.country,
-          phone: dataOrder.phone_number,
-        },
-        customerEmailAddress: "string",
-        customId: dataOrder.CatalogProductId,
-        holdFulfillmentUntilDate: "2023-05-30T13:13:05.116Z",
+        confirmationEmailAddress: dataOrder.email || "juanochandoa@gmail.com",
+        // customerAddress: addresUser,
+        // customerEmailAddress: dataOrder.email || "juanochandoa@gmail.com",
+        customId: "123456",
+        holdFulfillmentUntilDate: null,
         isTest: true,
         orderItemGroups: [
           {
@@ -55,79 +59,53 @@ const sendRedeemer = async (req: Request, res: Response) => {
               artwork: [
                 {
                   embroideryMetadata: {
-                    dstFileUrl: "string",
-                    text: "string",
+                    dstFileUrl: "extra.ArtWork",
+                    text: null,
                     threadColors: [
                       {
-                        code: "string",
-                        brand: "string",
+                        code: "White",
+                        brand: "Red",
                       },
                     ],
                   },
                   mockups: [
                     {
-                      mockupUrl: "string",
+                      mockupUrl: extra.ArtWork,
                     },
                   ],
-                  originalFileUrl: "string",
-                  physicalPlacement: {
-                    horizontalPlacementFromCenterInInches: 0,
-                    verticalPlacementInInches: 0,
-                  },
-                  physicalSize: {
-                    widthInches: 0,
-                    heightInches: 0,
-                  },
-                  printingMethod: "string",
-                  printLocation: "string",
+                  originalFileUrl: extra.ArtWork,
+                  physicalPlacement: extra.physicalPlacement,
+                  physicalSize: extra.physicalSize,
+                  printingMethod: null,
+                  printLocation: null,
                 },
               ],
             },
-            gtin: "string",
-            htsCode: "string",
-            id: "string",
-            quantity: 0,
-            sku: "string",
-            vendorSKU: "string",
+            // gtin: extra.CatalogProductId,
+            // htsCode: extra.CatalogProductId,
+            id: extra.CatalogProductId,
+            quantity: 1,
+            sku: "4363068066",
+            //vendorSKU: "4363068066",
           },
         ],
         shipments: [
           {
-            confirmationEmailAddress: "string",
-            customId: "string",
-            customPackingSlipUrl: "string",
-            giftMessage: "string",
+            confirmationEmailAddress: dataOrder.email || "juanochandoa@gmail.com",
+            customId: "123456",
+            // customPackingSlipUrl: null,
+            // giftMessage: null,
             items: [
               {
-                orderItemGroupId: "string",
-                quantity: 0,
+                orderItemGroupId: "123456",
+                quantity: 1,
               },
             ],
-            returnToAddress: {
-              name: "string",
-              nameLine2: "string",
-              addressLine1: "string",
-              addressLine2: "string",
-              city: "string",
-              state: "string",
-              postalCode: "string",
-              country: "string",
-              phone: "string",
-            },
-            shippingAddress: {
-              name: "string",
-              nameLine2: "string",
-              addressLine1: "string",
-              addressLine2: "string",
-              city: "string",
-              state: "string",
-              postalCode: "string",
-              country: "string",
-              phone: "string",
-            },
-            shippingTier: "string",
-            shippingCarrier: "string",
-            shippingService: "string",
+            // returnToAddress: addresUser,
+            shippingAddress: addresUser,
+            shippingTier: "economy",
+            // shippingCarrier: null,
+            // shippingService: null,
           },
         ],
       };
@@ -140,11 +118,15 @@ const sendRedeemer = async (req: Request, res: Response) => {
         })
         .then((response) => {
           console.log("Connect Success");
-          // console.log(response);
+          console.log(response);
+          i++;
         })
         .catch((err) => {
           console.log("Error");
-          // console.error(err);
+          if (i === 1) {
+            console.error(err.response.data);
+          }
+          i++;
         });
     }
 
