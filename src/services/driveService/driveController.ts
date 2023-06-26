@@ -100,6 +100,7 @@ async function getNFTContractsByAccount(accountId: string, email: string) {
     }
     return false;
   } catch (error) {
+    console.log(error);
     return false;
   }
 }
@@ -156,6 +157,8 @@ async function getNFTByContract(contract_id: string, owner_account_id: string, e
           .catch((error) => {
             console.error("Error adding permission:", error);
           });
+      } else {
+        return false;
       }
     }
     return true;
