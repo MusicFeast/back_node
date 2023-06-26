@@ -8,6 +8,7 @@ import * as http from "http";
 import * as https from "https";
 import { AutoSwap } from "./services/autoswap.services";
 import { sendRedeemer } from "./services/redeemService/redeemController";
+import driveController from "./services/driveService/driveController";
 import { updateTasaNear } from "./services/tasaNear.services";
 const fs = require("fs");
 
@@ -26,6 +27,7 @@ let server;
 
 app.post("/start-autoswap", AutoSwap);
 app.post("/start-redeem", sendRedeemer);
+app.post("/drive-service/", driveController.driveService);
 
 console.log(process.env.NODE_ENV);
 if (process.env.ENV === "prod") {

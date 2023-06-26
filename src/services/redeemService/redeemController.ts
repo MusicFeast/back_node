@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { v4 as uuid } from "uuid";
 //import dbConnect from "../config/postgres";
 //import fetch from "cross-fetch";
 import { utils } from "near-api-js";
@@ -14,20 +15,22 @@ const sendRedeemer = async (req: Request, res: Response) => {
     let i = 1;
 
     for (const data of dataRedeem) {
-      const extra = data.extra;
+      const extra = JSON.parse(data.extra);
 
       let conexion = await dbConnect();
       const resultados = await conexion.query("select * from backend_orderredeem where token_id = $1", [data.id]);
 
-      console.log(resultados.rows);
+      // console.log(resultados.rows);
 
       if (resultados.rows.length === 0) {
         continue;
       }
 
-      console.log(JSON.parse(extra));
+      // console.log(JSON.parse(extra));
 
       const dataOrder = resultados.rows[0];
+
+      if (!dataOrder.sku) continue;
 
       const addresUser = {
         name: dataOrder.city,
@@ -41,33 +44,22 @@ const sendRedeemer = async (req: Request, res: Response) => {
         phone: dataOrder.phone_number,
       };
 
+      const idOrder = uuid();
+
       const orderPost = {
-        campaignId: "123456",
-        confirmationEmailAddress: dataOrder.email || "juanochandoa@gmail.com",
+        // campaignId: "123456",
+        confirmationEmailAddress: dataOrder.email,
         // customerAddress: addresUser,
         // customerEmailAddress: dataOrder.email || "juanochandoa@gmail.com",
-        customId: "123456",
+        customId: idOrder,
         holdFulfillmentUntilDate: null,
         isTest: true,
         orderItemGroups: [
           {
-            countryOfOrigin: "string",
-            customsDescription: "string",
-            declaredValue: 0,
-            designId: "string",
+            declaredValue: 1,
             designData: {
               artwork: [
                 {
-                  embroideryMetadata: {
-                    dstFileUrl: "extra.ArtWork",
-                    text: null,
-                    threadColors: [
-                      {
-                        code: "White",
-                        brand: "Red",
-                      },
-                    ],
-                  },
                   mockups: [
                     {
                       mockupUrl: extra.ArtWork,
@@ -76,31 +68,28 @@ const sendRedeemer = async (req: Request, res: Response) => {
                   originalFileUrl: extra.ArtWork,
                   physicalPlacement: extra.physicalPlacement,
                   physicalSize: extra.physicalSize,
-                  printingMethod: null,
-                  printLocation: null,
+                  printingMethod: "dtg",
+                  printLocation: "front",
                 },
               ],
             },
-            // gtin: extra.CatalogProductId,
-            // htsCode: extra.CatalogProductId,
-            id: extra.CatalogProductId,
+            id: idOrder,
+            sku: dataOrder.sku,
             quantity: 1,
-            sku: "4363068066",
-            //vendorSKU: "4363068066",
           },
         ],
         shipments: [
           {
-            confirmationEmailAddress: dataOrder.email || "juanochandoa@gmail.com",
-            customId: "123456",
+            confirmationEmailAddress: dataOrder.email,
+            customId: idOrder,
             // customPackingSlipUrl: null,
             // giftMessage: null,
-            items: [
-              {
-                orderItemGroupId: "123456",
-                quantity: 1,
-              },
-            ],
+            // items: [
+            //   {
+            //     orderItemGroupId: "123456",
+            //     quantity: 1,
+            //   },
+            // ],
             // returnToAddress: addresUser,
             shippingAddress: addresUser,
             shippingTier: "economy",
@@ -110,7 +99,7 @@ const sendRedeemer = async (req: Request, res: Response) => {
         ],
       };
 
-      const res = await axios
+      await axios
         .post(process.env.API_FULFILL_URL as string, orderPost, {
           headers: {
             "x-api-key": process.env.API_KEY_FULFILL,
@@ -118,13 +107,16 @@ const sendRedeemer = async (req: Request, res: Response) => {
         })
         .then((response) => {
           console.log("Connect Success");
-          console.log(response);
+          console.log(response.data);
+          console.log(extra);
           i++;
         })
         .catch((err) => {
           console.log("Error");
           if (i === 1) {
             console.error(err.response.data);
+            console.log(extra.ArtWork);
+            console.log(extra);
           }
           i++;
         });
