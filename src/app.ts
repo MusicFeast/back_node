@@ -30,7 +30,7 @@ app.post("/start-redeem", sendRedeemer);
 app.post("/drive-service/", driveController.driveService);
 
 console.log(process.env.NODE_ENV);
-if (process.env.ENV === "prod") {
+if (process.env.NODE_ENV === "production") {
   const privateKey = fs.readFileSync("/etc/letsencrypt/live/musicfeast.io/privkey.pem", "utf8");
   const certificate = fs.readFileSync("/etc/letsencrypt/live/musicfeast.io/cert.pem", "utf8");
   const ca = fs.readFileSync("/etc/letsencrypt/live/musicfeast.io/chain.pem", "utf8");

@@ -2,15 +2,34 @@ import "dotenv/config";
 import { v4 as uuid } from "uuid";
 //import dbConnect from "../config/postgres";
 //import fetch from "cross-fetch";
-import { utils } from "near-api-js";
+import { Contract, KeyPair, Near, keyStores, utils } from "near-api-js";
 import { getListRedeemer, getWalletArtistId } from "./apolloGraphql";
 //import { getNearPrice } from "./utils";
 import { Request, Response } from "express";
 import axios from "axios";
 import dbConnect from "../../config/postgres";
+import { AccountService } from "../account.service";
+import { CONFIG } from "../utils";
 
 const sendRedeemer = async (req: Request, res: Response) => {
   try {
+    console.log("START REDEEM");
+    const address = process.env.ADDRESS_TASA!;
+    const privateKey = process.env.PRIVATE_KEY_TASA!;
+
+    const keyStore = new keyStores.InMemoryKeyStore();
+
+    const keyPair = KeyPair.fromString(privateKey);
+    keyStore.setKey(process.env.NEAR_ENV!, address, keyPair);
+    const near = new Near(CONFIG(keyStore));
+
+    const account = new AccountService(near.connection, address);
+
+    const contract: any = new Contract(account, String(process.env.SMART_CONTRACT), {
+      changeMethods: ["reedemer_approved"],
+      viewMethods: [],
+    });
+
     let dataRedeem = await getListRedeemer();
     let i = 1;
 
@@ -105,10 +124,16 @@ const sendRedeemer = async (req: Request, res: Response) => {
             "x-api-key": process.env.API_KEY_FULFILL,
           },
         })
-        .then((response) => {
+        .then(async (response) => {
           console.log("Connect Success");
           console.log(response.data);
           console.log(extra);
+          await contract.reedemer_approved({
+            token_id: data.id,
+          });
+          await conexion.query("update backend_orderredeem set approved = true where token_id = $1 ", [data.id]);
+          // await conexion.query("DELETE from backend_orderredeem where token_id = $1", [data.id]);
+          console.log("SUCCESS!!");
           i++;
         })
         .catch((err) => {
