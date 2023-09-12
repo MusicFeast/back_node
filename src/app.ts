@@ -10,6 +10,7 @@ import { AutoSwap } from "./services/autoswap.services";
 import { sendRedeemer } from "./services/redeemService/redeemController";
 import driveController from "./services/driveService/driveController";
 import { updateTasaNear } from "./services/tasaNear.services";
+import { awardNft } from "./services/awardNft.services";
 const fs = require("fs");
 
 const PORT = Number(process.env.PORT) || 3000;
@@ -26,6 +27,7 @@ dbConnect().then(async () => {
 let server;
 
 app.post("/start-autoswap", AutoSwap);
+app.post("/award-nft/", awardNft);
 app.post("/start-redeem", sendRedeemer);
 app.post("/drive-service/", driveController.driveService);
 
