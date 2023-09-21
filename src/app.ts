@@ -10,7 +10,7 @@ import { AutoSwap } from "./services/autoswap.services";
 import { sendRedeemer } from "./services/redeemService/redeemController";
 import driveController from "./services/driveService/driveController";
 import { updateTasaNear } from "./services/tasaNear.services";
-import { awardNft } from "./services/awardNft.services";
+import { awardNft, sendMail } from "./services/awardNft.services";
 const fs = require("fs");
 
 const PORT = Number(process.env.PORT) || 3000;
@@ -19,6 +19,8 @@ const app = express();
 app.use(morgan("dev"));
 app.use(cors());
 app.use(express.json());
+
+sendMail();
 
 dbConnect().then(async () => {
   // console.log("Conexion DB Ready");
