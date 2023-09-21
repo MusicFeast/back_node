@@ -59,7 +59,6 @@ const sendMail = async (email: string) => {
   try {
     let from = process.env.USER_MAIL;
 
-    // point to the template folder
     const handlebarOptions: NodemailerExpressHandlebarsOptions = {
       viewEngine: {
         partialsDir: path.join(__dirname, "/viewsEmail"),
@@ -76,7 +75,6 @@ const sendMail = async (email: string) => {
       subject: "MusicFeast",
       template: "musicfeast",
     };
-    console.log("AQUI VA");
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
         console.log("--------------------------------------------");
