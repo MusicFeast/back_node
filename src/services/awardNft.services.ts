@@ -45,13 +45,7 @@ const awardNft = async (req: Request, res: Response) => {
 };
 
 const transporter = nodemailer.createTransport({
-  service: "Outlook365",
-  host: "smtp.office365.com",
-  port: 587,
-  tls: {
-    ciphers: "SSLv3",
-    rejectUnauthorized: false,
-  },
+  service: "gmail",
   auth: { user: process.env.USER_MAIL, pass: process.env.PASS_MAIL },
 });
 
@@ -77,11 +71,9 @@ const sendMail = async (email: string) => {
     };
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
-        console.log("--------------------------------------------");
-        console.log(error);
-        console.log("--------------------------------------------");
+        console.log(false);
       } else {
-        console.log("Email sent: " + info.response);
+        console.log(true);
       }
     });
   } catch (error) {
