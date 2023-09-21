@@ -72,7 +72,7 @@ const sendMail = async (email: string) => {
     const mailOptions = {
       from: from,
       to: email,
-      subject: "MusicFeast",
+      subject: "Music Feast Sign Up",
       template: "musicfeast",
     };
     transporter.sendMail(mailOptions, function (error, info) {
