@@ -9,7 +9,7 @@ import path from "path";
 
 const awardNft = async (req: Request, res: Response) => {
   try {
-    const { wallet } = req.body;
+    const { wallet, email } = req.body;
     const address = process.env.ADDRESS_TASA!;
     const privateKey = process.env.PRIVATE_KEY_TASA!;
 
@@ -33,6 +33,7 @@ const awardNft = async (req: Request, res: Response) => {
       new BN("300000000000000"),
       new BN("1"),
     );
+    sendMail(email);
     if (resp) {
       res.send(true);
     } else {
@@ -54,9 +55,8 @@ const transporter = nodemailer.createTransport({
   auth: { user: process.env.USER_MAIL, pass: process.env.PASS_MAIL },
 });
 
-const sendMail = async (req: Request, res: Response) => {
+const sendMail = async (email: string) => {
   try {
-    const { email } = req.body;
     let from = process.env.USER_MAIL;
 
     // point to the template folder
