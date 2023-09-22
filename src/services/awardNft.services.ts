@@ -10,6 +10,7 @@ import path from "path";
 const awardNft = async (req: Request, res: Response) => {
   try {
     const { wallet, email } = req.body;
+
     const address = process.env.ADDRESS_TASA!;
     const privateKey = process.env.PRIVATE_KEY_TASA!;
 
@@ -70,7 +71,9 @@ const sendMail = async (email: string) => {
       template: "musicfeast",
     };
     transporter.sendMail(mailOptions, function (error, info) {
+      console.log("Email");
       if (error) {
+        console.log(error);
         console.log(false);
       } else {
         console.log(true);
