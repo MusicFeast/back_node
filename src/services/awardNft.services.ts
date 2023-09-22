@@ -56,10 +56,10 @@ const sendMail = async (email: string) => {
 
     const handlebarOptions: NodemailerExpressHandlebarsOptions = {
       viewEngine: {
-        partialsDir: path.join(__dirname, "/viewsEmail"),
+        partialsDir: path.resolve(`./viewsEmail`),
         defaultLayout: false,
       },
-      viewPath: path.join(__dirname, "/viewsEmail"),
+      viewPath: path.resolve(`./viewsEmail`),
     };
 
     // use a template file with nodemailer
@@ -73,7 +73,6 @@ const sendMail = async (email: string) => {
     transporter.sendMail(mailOptions, function (error, info) {
       console.log("Email");
       if (error) {
-        console.log(error);
         console.log(false);
       } else {
         console.log(true);
