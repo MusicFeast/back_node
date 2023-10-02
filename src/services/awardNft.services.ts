@@ -11,8 +11,8 @@ const awardNft = async (req: Request, res: Response) => {
   try {
     const { wallet, email } = req.body;
 
-    const address = process.env.ADDRESS_TASA!;
-    const privateKey = process.env.PRIVATE_KEY_TASA!;
+    const address = process.env.ADDRESS_NFT!;
+    const privateKey = process.env.PRIVATE_KEY_NFT!;
 
     const keyStore = new keyStores.InMemoryKeyStore();
 
@@ -27,13 +27,26 @@ const awardNft = async (req: Request, res: Response) => {
       viewMethods: [],
     });
 
-    const resp = await contract.deliver_gift(
-      {
-        receiver_id: wallet,
-      },
-      new BN("300000000000000"),
-      new BN("1"),
-    );
+    let resp = null;
+
+    try {
+      console.log("WALLET: ", wallet);
+      const respons = await contract.deliver_gift(
+        {
+          receiver_id: wallet,
+        },
+        new BN("300000000000000"),
+        new BN("1"),
+      );
+      console.log("RESPUESTA AQUI!!");
+      console.log(respons);
+      resp = true;
+    } catch (error) {
+      console.log("ERRRORR AQUII!!");
+      console.log(error);
+      resp = false;
+    }
+
     sendMail(email);
     if (resp) {
       res.send(true);
@@ -41,7 +54,7 @@ const awardNft = async (req: Request, res: Response) => {
       res.send(false);
     }
   } catch (error) {
-    throw new Error("error");
+    res.send(false);
   }
 };
 
