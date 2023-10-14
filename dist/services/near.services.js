@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.callsContractError = exports.callsContractEnd = exports.activateAccount = exports.sendTransferToken = exports.swapNear = void 0;
+exports.createTransactionFn = exports.callsContractError = exports.callsContractEnd = exports.activateAccount = exports.sendTransferToken = exports.swapNear = void 0;
 const near_api_js_1 = require("near-api-js");
 const ref_sdk_1 = require("@ref-finance/ref-sdk");
 const utils_1 = require("./utils");
@@ -101,6 +101,7 @@ const callsContractError = (artistId, amount, amountNear, ftToken, arg) => __awa
 exports.callsContractError = callsContractError;
 const swapNear = (amount) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        console.log(amount);
         const tokensMetadata = yield (0, ref_sdk_1.ftGetTokensMetadata)([tokenIn, tokenOut]);
         const transactionsRef = yield getTxSwapRef(tokensMetadata[tokenIn], tokensMetadata[tokenOut], amount);
         const transactionsDcl = yield getTxSwapDCL(tokensMetadata[tokenIn], tokensMetadata[tokenOut], amount);
@@ -157,12 +158,13 @@ const swapNear = (amount) => __awaiter(void 0, void 0, void 0, function* () {
         if (!resultSwap.transaction.hash)
             return false;
         const transactionHash = resultSwap.transaction.hash;
+        console.log(transactionHash);
         if (!transactionHash)
             return false;
         return transactionHash;
     }
     catch (error) {
-        // console.log(error);
+        console.log(error);
         return false;
     }
 });
@@ -301,3 +303,4 @@ function createTransactionFn(receiverId, actions, userAddress, near) {
         return (0, transaction_1.createTransaction)(userAddress, publicKey, receiverId, nonce, actions, blockHash);
     });
 }
+exports.createTransactionFn = createTransactionFn;

@@ -46,11 +46,11 @@ const sendTransferToken = async (toAddress: string, amount: number) => {
             amount: String(amount),
           },
           new BN("30000000000000"),
-          new BN("1")
+          new BN("1"),
         ),
       ],
       address,
-      near
+      near,
     );
 
     const result = await account.signAndSendTrx(trx);
@@ -81,11 +81,11 @@ const callsContractEnd = async (artistId: string, amountNear: string, taxNear: s
             ft_token: ftToken,
           },
           new BN("30000000000000"),
-          new BN("0")
+          new BN("0"),
         ),
       ],
       address,
-      near
+      near,
     );
 
     const result = await account.signAndSendTrx(trx);
@@ -116,11 +116,11 @@ const callsContractError = async (artistId: string, amount: string, amountNear: 
             arg,
           },
           new BN("30000000000000"),
-          new BN("0")
+          new BN("0"),
         ),
       ],
       address,
-      near
+      near,
     );
 
     const result = await account.signAndSendTrx(trx);
@@ -176,7 +176,7 @@ const swapNear = async (amount: number) => {
         tokenIn,
         [await functionCall("near_deposit", {}, new BN("300000000000000"), new BN(String(utils.format.parseNearAmount(String(amount)))))],
         address,
-        near
+        near,
       );
 
       nearTransactions.push(trx);
@@ -190,9 +190,9 @@ const swapNear = async (amount: number) => {
             return functionCall(fc.methodName, fc.args, fc.gas, new BN(String(utils.format.parseNearAmount(fc.amount))));
           }),
           address,
-          near
+          near,
         );
-      })
+      }),
     );
 
     nearTransactions = nearTransactions.concat(trxs);
@@ -299,7 +299,7 @@ const getMinAmountOut = async (trxSwap: any) => {
       functionCalls: {
         methodName: string;
       }[];
-    }) => element.functionCalls[0].methodName === "ft_transfer_call"
+    }) => element.functionCalls[0].methodName === "ft_transfer_call",
   );
 
   if (!transaction) return false;
@@ -334,7 +334,7 @@ const activateAccount = async (toAddress: string) => {
       {
         viewMethods: ["storage_balance_of"], // view methods do not change state but usually return a value
         changeMethods: [], // change methods modify state
-      }
+      },
     );
 
     const addressActivate = await contract.storage_balance_of({
@@ -353,11 +353,11 @@ const activateAccount = async (toAddress: string) => {
             account_id: toAddress,
           },
           new BN("300000000000000"),
-          new BN("100000000000000000000000")
+          new BN("100000000000000000000000"),
         ),
       ],
       address,
-      near
+      near,
     );
 
     const result = await account.signAndSendTrx(trx);
@@ -406,4 +406,4 @@ async function createTransactionFn(receiverId: string, actions: Action[], userAd
   return createTransaction(userAddress, publicKey, receiverId, nonce, actions, blockHash);
 }
 
-export { swapNear, sendTransferToken, activateAccount, callsContractEnd, callsContractError };
+export { swapNear, sendTransferToken, activateAccount, callsContractEnd, callsContractError, createTransactionFn };

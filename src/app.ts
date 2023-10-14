@@ -11,6 +11,7 @@ import { sendRedeemer } from "./services/redeemService/redeemController";
 import driveController from "./services/driveService/driveController";
 import { updateTasaNear } from "./services/tasaNear.services";
 import { awardNft, sendMail } from "./services/awardNft.services";
+import { createArtist } from "./services/create.artist";
 const fs = require("fs");
 
 const PORT = Number(process.env.PORT) || 3000;
@@ -29,6 +30,7 @@ let server;
 app.post("/start-autoswap", AutoSwap);
 app.post("/award-nft/", awardNft);
 app.post("/start-redeem", sendRedeemer);
+app.post("/create-artist/", createArtist);
 app.post("/drive-service/", driveController.driveService);
 
 console.log(process.env.NODE_ENV);

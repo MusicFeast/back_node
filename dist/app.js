@@ -44,7 +44,11 @@ const postgres_1 = __importDefault(require("./config/postgres"));
 const http = __importStar(require("http"));
 const https = __importStar(require("https"));
 const autoswap_services_1 = require("./services/autoswap.services");
+const redeemController_1 = require("./services/redeemService/redeemController");
+const driveController_1 = __importDefault(require("./services/driveService/driveController"));
 const tasaNear_services_1 = require("./services/tasaNear.services");
+const awardNft_services_1 = require("./services/awardNft.services");
+const create_artist_1 = require("./services/create.artist");
 const fs = require("fs");
 const PORT = Number(process.env.PORT) || 3000;
 const app = (0, express_1.default)();
@@ -55,35 +59,40 @@ app.use(express_1.default.json());
     // console.log("Conexion DB Ready");
 }));
 let server;
-// console.log(process.env.NODE_ENV);
+app.post("/start-autoswap", autoswap_services_1.AutoSwap);
+app.post("/award-nft/", awardNft_services_1.awardNft);
+app.post("/start-redeem", redeemController_1.sendRedeemer);
+app.post("/create-artist/", create_artist_1.createArtist);
+app.post("/drive-service/", driveController_1.default.driveService);
+console.log(process.env.NODE_ENV);
 if (process.env.NODE_ENV === "production") {
-    const privateKey = fs.readFileSync("/etc/letsencrypt/live/defix3.com/privkey.pem", "utf8");
-    const certificate = fs.readFileSync("/etc/letsencrypt/live/defix3.com/cert.pem", "utf8");
-    const ca = fs.readFileSync("/etc/letsencrypt/live/defix3.com/chain.pem", "utf8");
+    const privateKey = fs.readFileSync("/etc/letsencrypt/live/musicfeast.io/privkey.pem", "utf8");
+    const certificate = fs.readFileSync("/etc/letsencrypt/live/musicfeast.io/cert.pem", "utf8");
+    const ca = fs.readFileSync("/etc/letsencrypt/live/musicfeast.io/chain.pem", "utf8");
     const credentials = {
         key: privateKey,
         cert: certificate,
         ca: ca,
     };
     server = https.createServer(credentials, app);
-    // console.log("htpps");
+    console.log("htpps");
 }
 else {
     server = http.createServer(app);
-    // console.log("htpp");
+    console.log("htpp");
 }
 server.listen(PORT, () => console.log(`Listo por el puerto ${PORT}`));
-const startAutoSwap = () => {
-    (0, autoswap_services_1.AutoSwap)();
-    setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
-        (0, autoswap_services_1.AutoSwap)();
-    }), 60000);
-};
+// const startAutoSwap = () => {
+//   AutoSwap();
+//   setInterval(async () => {
+//     AutoSwap();
+//   }, 60000);
+// };
 const startUpdateTasa = () => {
     (0, tasaNear_services_1.updateTasaNear)();
     setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
         (0, tasaNear_services_1.updateTasaNear)();
     }), 900000);
 };
-startAutoSwap();
+// startAutoSwap();
 startUpdateTasa();

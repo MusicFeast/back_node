@@ -15,16 +15,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getWalletArtistId = exports.getAutoSwapsApollo = void 0;
 const client_1 = require("@apollo/client");
 const graphql_tag_1 = __importDefault(require("graphql-tag"));
-const cache = new client_1.InMemoryCache();
-const clientApollo = new client_1.ApolloClient({
-    cache: cache,
-    link: new client_1.HttpLink({
-        uri: process.env.GRAPH_URL,
-        fetch: fetch,
-    }),
-});
 const getAutoSwapsApollo = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const cache = new client_1.InMemoryCache();
+        const clientApollo = new client_1.ApolloClient({
+            cache: cache,
+            link: new client_1.HttpLink({
+                uri: process.env.GRAPH_URL,
+                fetch: fetch,
+            }),
+        });
         let data;
         const QUERY_APOLLO = (0, graphql_tag_1.default) `
       query QUERY_APOLLO {
@@ -54,6 +54,14 @@ const getAutoSwapsApollo = () => __awaiter(void 0, void 0, void 0, function* () 
 exports.getAutoSwapsApollo = getAutoSwapsApollo;
 const getWalletArtistId = (id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const cache = new client_1.InMemoryCache();
+        const clientApollo = new client_1.ApolloClient({
+            cache: cache,
+            link: new client_1.HttpLink({
+                uri: process.env.GRAPH_URL,
+                fetch: fetch,
+            }),
+        });
         if (id === "0")
             return process.env.ADDRES_SEND;
         const QUERY_APOLLO = (0, graphql_tag_1.default) `

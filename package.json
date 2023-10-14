@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon ./src/app.ts",
     "build": "rm -rf dist/* && tsc",
-    "start": "export NODE_ENV=production && node ./dist/app.js"
+    "start": "export NODE_ENV=dev && node ./dist/app.js"
   },
   "keywords": [],
   "author": "",

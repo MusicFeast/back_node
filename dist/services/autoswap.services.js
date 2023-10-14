@@ -11,14 +11,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AutoSwap = void 0;
 require("dotenv/config");
+//import dbConnect from "../config/postgres";
+//import fetch from "cross-fetch";
 const near_api_js_1 = require("near-api-js");
+//import BN from "bn.js";
+//import { PublicKey } from "near-api-js/lib/utils";
+//import axios from "axios";
 const near_services_1 = require("./near.services");
 const apolloGraphql_services_1 = require("./apolloGraphql.services");
 const decimals = Number(process.env.DECIMALS);
-const AutoSwap = () => __awaiter(void 0, void 0, void 0, function* () {
+const AutoSwap = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // console.log("START AUTO SWAP");
-        // const nearUsd = await getNearPrice();
+        console.log("1");
         let dataForSwap = yield (0, apolloGraphql_services_1.getAutoSwapsApollo)();
         let totalAmountNear = 0;
         for (const forSwap of dataForSwap) {
@@ -31,13 +35,16 @@ const AutoSwap = () => __awaiter(void 0, void 0, void 0, function* () {
                 totalAmountNear += Number(near_api_js_1.utils.format.formatNearAmount(forSwap.amount_near));
             }
         }
-        // console.log("TotalAmount: " + totalAmountNear);
-        if (!(totalAmountNear > 0))
-            return; // console.log("AUTOSWAP NOT AMOUNT NEAR");
+        if (!(totalAmountNear > 0)) {
+            res.json("Amount 0");
+            return;
+        } // console.log("AUTOSWAP NOT AMOUNT NEAR");
         let resultSwap = yield (0, near_services_1.swapNear)(totalAmountNear);
         // console.log(resultSwap);
-        if (!resultSwap)
-            return; // console.log("AUTOSWAP END RESULT SWAP");
+        if (!resultSwap) {
+            res.status(204).json("No se ejecuto el Swap");
+            return;
+        } // console.log("AUTOSWAP END RESULT SWAP");
         for (const item of dataForSwap) {
             // console.log("ENTRO SWAPPPPP");
             // console.log(item);
@@ -77,11 +84,15 @@ const AutoSwap = () => __awaiter(void 0, void 0, void 0, function* () {
             }
         }
         totalAmountNear = 0;
+        console.log("END");
+        res.json();
+        return;
         // console.log("AUTOSWAP END");
     }
     catch (error) {
         // console.log("err");
         // console.log(error);
+        res.status(500).json();
         return;
         // AutoSwap();
     }
