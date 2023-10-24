@@ -81,4 +81,44 @@ const getWalletArtistId = async (id: string) => {
   }
 };
 
-export { getAutoSwapsApollo, getWalletArtistId };
+const getArtistByWallet = async (wallet: string) => {
+  try {
+    const cache = new InMemoryCache();
+
+    const clientApollo = new ApolloClient({
+      cache: cache,
+      link: new HttpLink({
+        uri: process.env.GRAPH_URL,
+        fetch: fetch,
+      }),
+    });
+
+    if (!wallet) return process.env.ADDRES_SEND;
+
+    const QUERY_APOLLO = gql`
+      query QUERY_APOLLO($wallet: String) {
+        artist(wallet: $wallet) {
+          wallet
+        }
+      }
+    `;
+
+    const res = await clientApollo.query({
+      query: QUERY_APOLLO,
+      variables: { wallet: wallet },
+    });
+
+    const data = res.data.artist;
+
+    // console.log(data);
+
+    if (!data) return false;
+
+    return data.wallet;
+  } catch (error) {
+    // console.log(error);
+    return false;
+  }
+};
+
+export { getAutoSwapsApollo, getWalletArtistId, getArtistByWallet };
