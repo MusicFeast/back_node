@@ -313,4 +313,47 @@ const createTiers = async (req: Request, res: Response) => {
   }
 };
 
-export { createArtist, createTiers };
+const updateNft = async (req: Request, res: Response) => {
+  try {
+    const { id, title, description, price, media } = req.body;
+
+    const address = process.env.ADDRESS_NFT!;
+    const privateKey = process.env.PRIVATE_KEY_NFT!;
+
+    const keyStore = new keyStores.InMemoryKeyStore();
+
+    const keyPair = KeyPair.fromString(privateKey);
+    keyStore.setKey(process.env.NEAR_ENV!, address, keyPair);
+    const near = new Near(CONFIG(keyStore));
+
+    const account = new AccountService(near.connection, address);
+
+    const args: any = {
+      token_series_id: String(id),
+    };
+
+    if (title) args.title = title;
+    if (description) args.description = description;
+    if (media) args.media = media;
+    if (price) args.price = Number(price);
+
+    const trx = await createTransactionFn(
+      process.env.SMART_CONTRACT!,
+      [await functionCall("update_nft_series", args, new BN("30000000000000"), new BN("0"))],
+      address,
+      near,
+    );
+
+    const result = await account.signAndSendTrx(trx);
+
+    if (result?.transaction?.hash) {
+      res.send({ hash: result.transaction.hash });
+    } else {
+      res.status(400).send({ error: "Error" });
+    }
+  } catch (error: any) {
+    res.status(500).send({ error: error.message });
+  }
+};
+
+export { createArtist, createTiers, updateNft };
