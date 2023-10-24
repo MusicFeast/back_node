@@ -146,8 +146,8 @@ const swapNear = async (amount: number) => {
     const minAmountRef = await getMinAmountOut(transactionsRef);
     const minAmountDcl = await getMinAmountOut(transactionsDcl);
 
-    // console.log("MIN AMOUNTS");
-    // console.log(minAmountRef, minAmountDcl);
+    console.log("MIN AMOUNTS");
+    console.log(minAmountRef, minAmountDcl);
 
     let txMain: any;
 
@@ -204,8 +204,8 @@ const swapNear = async (amount: number) => {
         await esperar(30000);
         // console.log("FUNCTION ESPERA END");
       }
-      // console.log("ENTRA");
-      // console.log(trx.actions[0].functionCall.methodName);
+      console.log("ENTRA");
+      console.log(trx.actions[0].functionCall.methodName);
 
       const result = await account.signAndSendTrx(trx);
 

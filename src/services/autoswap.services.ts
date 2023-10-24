@@ -29,6 +29,8 @@ const AutoSwap = async (req: Request, res: Response) => {
       }
     }
 
+    console.log("2");
+
     if (!(totalAmountNear > 0)) {
       res.json("Amount 0");
       return;
@@ -37,6 +39,8 @@ const AutoSwap = async (req: Request, res: Response) => {
     let resultSwap = await swapNear(totalAmountNear);
 
     // console.log(resultSwap);
+
+    console.log("3");
 
     if (!resultSwap) {
       res.status(204).json("No se ejecuto el Swap");
@@ -50,6 +54,8 @@ const AutoSwap = async (req: Request, res: Response) => {
       } else if (Number(item.amount_near) < 0 || Number(item.amount_usd) < 0) {
         continue;
       }
+
+      console.log("4");
 
       // const sendUser =
       //   Number(utils.format.formatNearAmount(item.amount)) * nearUsd;
