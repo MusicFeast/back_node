@@ -97,7 +97,7 @@ const getArtistByWallet = async (wallet: string) => {
 
     const QUERY_APOLLO = gql`
       query QUERY_APOLLO($wallet: String) {
-        artist(wallet: $wallet) {
+        artists(where: { wallet: $wallet }) {
           wallet
         }
       }
@@ -108,13 +108,13 @@ const getArtistByWallet = async (wallet: string) => {
       variables: { wallet: wallet },
     });
 
-    const data = res.data.artist;
+    const data = res.data.artists;
 
     // console.log(data);
 
-    if (!data) return false;
+    if (data.length === 0) return false;
 
-    return data.wallet;
+    return data[0];
   } catch (error) {
     // console.log(error);
     return false;
