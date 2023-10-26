@@ -107,8 +107,8 @@ const swapNear = (amount) => __awaiter(void 0, void 0, void 0, function* () {
         const transactionsDcl = yield getTxSwapDCL(tokensMetadata[tokenIn], tokensMetadata[tokenOut], amount);
         const minAmountRef = yield getMinAmountOut(transactionsRef);
         const minAmountDcl = yield getMinAmountOut(transactionsDcl);
-        // console.log("MIN AMOUNTS");
-        // console.log(minAmountRef, minAmountDcl);
+        console.log("MIN AMOUNTS");
+        console.log(minAmountRef, minAmountDcl);
         let txMain;
         if (minAmountRef && !minAmountDcl) {
             // console.log("REF");
@@ -148,8 +148,8 @@ const swapNear = (amount) => __awaiter(void 0, void 0, void 0, function* () {
                 yield esperar(30000);
                 // console.log("FUNCTION ESPERA END");
             }
-            // console.log("ENTRA");
-            // console.log(trx.actions[0].functionCall.methodName);
+            console.log("ENTRA");
+            console.log(trx.actions[0].functionCall.methodName);
             const result = yield account.signAndSendTrx(trx);
             if (trx.actions[0].functionCall.methodName === "ft_transfer_call") {
                 resultSwap = result;

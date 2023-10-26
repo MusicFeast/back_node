@@ -9,6 +9,10 @@ import path from "path";
 import { createTransactionFn } from "./near.services";
 import { functionCall } from "near-api-js/lib/transaction";
 import { getArtistByWallet } from "./apolloGraphql.services";
+import axios from "axios";
+import { Vimeo } from "vimeo";
+
+let client = new Vimeo(process.env.VIMEO_CLIENT_ID!, process.env.VIMEO_CLIENT_SECRET!, process.env.VIMEO_ACCESS_TOKEN!);
 
 const createArtist = async (req: Request, res: Response) => {
   try {
@@ -314,7 +318,7 @@ const createTiers = async (req: Request, res: Response) => {
 
 const updateNft = async (req: Request, res: Response) => {
   try {
-    const { id, title, description, price, media } = req.body;
+    const { id, title, description, price, media, wallet, tier, id_collection } = req.body;
 
     const address = process.env.ADDRESS_NFT!;
     const privateKey = process.env.PRIVATE_KEY_NFT!;
@@ -346,6 +350,35 @@ const updateNft = async (req: Request, res: Response) => {
     const result = await account.signAndSendTrx(trx);
 
     if (result?.transaction?.hash) {
+      if (req.file) {
+        const video = req.file;
+
+        const videoPath = path.join(__dirname, "../../uploads/" + video.originalname);
+
+        client.upload(
+          videoPath,
+          {
+            name: video.originalname,
+            description: "Video",
+          },
+          function (uri: string) {
+            const id = uri.replace("/videos/", "");
+            axios.post(`${process.env.DJANGO_URL}api/v1/update-coming-soon/`, {
+              wallet: wallet,
+              tier: tier,
+              id_collection: id_collection,
+              vimeo_id: id,
+            });
+          },
+          function (bytes_uploaded: number, bytes_total: number) {
+            var percentage = ((bytes_uploaded / bytes_total) * 100).toFixed(2);
+            console.log(bytes_uploaded, bytes_total, percentage + "%");
+          },
+          function (error: string) {
+            console.log("Failed because: " + error);
+          },
+        );
+      }
       res.send({ hash: result.transaction.hash });
     } else {
       res.status(400).send({ error: "Error" });

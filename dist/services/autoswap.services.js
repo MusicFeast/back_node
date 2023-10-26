@@ -35,12 +35,14 @@ const AutoSwap = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 totalAmountNear += Number(near_api_js_1.utils.format.formatNearAmount(forSwap.amount_near));
             }
         }
+        console.log("2");
         if (!(totalAmountNear > 0)) {
             res.json("Amount 0");
             return;
         } // console.log("AUTOSWAP NOT AMOUNT NEAR");
         let resultSwap = yield (0, near_services_1.swapNear)(totalAmountNear);
         // console.log(resultSwap);
+        console.log("3");
         if (!resultSwap) {
             res.status(204).json("No se ejecuto el Swap");
             return;
@@ -54,6 +56,7 @@ const AutoSwap = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             else if (Number(item.amount_near) < 0 || Number(item.amount_usd) < 0) {
                 continue;
             }
+            console.log("4");
             // const sendUser =
             //   Number(utils.format.formatNearAmount(item.amount)) * nearUsd;
             // console.log(item.amount_usd);

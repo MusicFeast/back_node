@@ -49,7 +49,15 @@ const driveController_1 = __importDefault(require("./services/driveService/drive
 const tasaNear_services_1 = require("./services/tasaNear.services");
 const awardNft_services_1 = require("./services/awardNft.services");
 const create_artist_1 = require("./services/create.artist");
+const multer_1 = __importDefault(require("multer"));
 const fs = require("fs");
+const storage = multer_1.default.diskStorage({
+    destination: "./uploads/",
+    filename: (req, file, cb) => {
+        cb(null, file.originalname); // Utiliza el nombre original del archivo
+    },
+});
+const upload = (0, multer_1.default)({ storage });
 const PORT = Number(process.env.PORT) || 3000;
 const app = (0, express_1.default)();
 app.use((0, morgan_1.default)("dev"));
@@ -63,6 +71,9 @@ app.post("/start-autoswap", autoswap_services_1.AutoSwap);
 app.post("/award-nft/", awardNft_services_1.awardNft);
 app.post("/start-redeem", redeemController_1.sendRedeemer);
 app.post("/create-artist/", create_artist_1.createArtist);
+app.post("/create-tiers/", create_artist_1.createTiers);
+app.post("/update-nft/", upload.single("video"), create_artist_1.updateNft);
+app.post("/new-collection/", create_artist_1.newCollection);
 app.post("/drive-service/", driveController_1.default.driveService);
 console.log(process.env.NODE_ENV);
 if (process.env.NODE_ENV === "production") {

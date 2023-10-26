@@ -12,7 +12,17 @@ import driveController from "./services/driveService/driveController";
 import { updateTasaNear } from "./services/tasaNear.services";
 import { awardNft, sendMail } from "./services/awardNft.services";
 import { createArtist, createTiers, newCollection, updateNft } from "./services/create.artist";
+import multer from "multer";
 const fs = require("fs");
+
+const storage = multer.diskStorage({
+  destination: "./uploads/", // Directorio de destino donde se guardarán los archivos
+  filename: (req, file, cb) => {
+    cb(null, file.originalname); // Utiliza el nombre original del archivo
+  },
+});
+
+const upload = multer({ storage });
 
 const PORT = Number(process.env.PORT) || 3000;
 const app = express();
@@ -32,7 +42,7 @@ app.post("/award-nft/", awardNft);
 app.post("/start-redeem", sendRedeemer);
 app.post("/create-artist/", createArtist);
 app.post("/create-tiers/", createTiers);
-app.post("/update-nft/", updateNft);
+app.post("/update-nft/", upload.single("video"), updateNft);
 app.post("/new-collection/", newCollection);
 app.post("/drive-service/", driveController.driveService);
 
