@@ -98,6 +98,7 @@ const getArtistByWallet = async (wallet: string) => {
     const QUERY_APOLLO = gql`
       query QUERY_APOLLO($wallet: String) {
         artists(where: { wallet: $wallet }) {
+          id
           wallet
         }
       }
