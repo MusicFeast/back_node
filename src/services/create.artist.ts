@@ -318,7 +318,7 @@ const createTiers = async (req: Request, res: Response) => {
 
 const updateNft = async (req: Request, res: Response) => {
   try {
-    const { id, title, description, price, media, wallet, tier, id_collection } = req.body;
+    const { id, title, description, price, media, wallet, tier, id_collection, number_collection } = req.body;
 
     const address = process.env.ADDRESS_NFT!;
     const privateKey = process.env.PRIVATE_KEY_NFT!;
@@ -368,6 +368,7 @@ const updateNft = async (req: Request, res: Response) => {
               tier: tier,
               id_collection: id_collection,
               vimeo_id: id,
+              number_collection: number_collection,
             });
           },
           function (bytes_uploaded: number, bytes_total: number) {
