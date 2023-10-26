@@ -88,38 +88,37 @@ const createTiers = async (req: Request, res: Response) => {
 
     // Itera sobre el array y asigna las propiedades y valores al objeto
     for (const item of dataSplit) {
-      const wallet = await getArtistByWallet(item.account);
+      const artists = await getArtistByWallet(item.account);
 
-      if (wallet) {
-        royaltiesBuy[wallet] = Number(item.percentage) * 100;
-        continue;
-      }
+      if (artists) {
+        royaltiesBuy[artists.id] = Number(item.percentage) * 100;
+      } else {
+        const trx = await createTransactionFn(
+          process.env.SMART_CONTRACT!,
+          [
+            await functionCall(
+              "add_artist",
+              {
+                name: item.account,
+                wallet: item.account,
+              },
+              new BN("30000000000000"),
+              new BN("0"),
+            ),
+          ],
+          address,
+          near,
+        );
 
-      const trx = await createTransactionFn(
-        process.env.SMART_CONTRACT!,
-        [
-          await functionCall(
-            "add_artist",
-            {
-              name: item.account,
-              wallet: item.account,
-            },
-            new BN("30000000000000"),
-            new BN("0"),
-          ),
-        ],
-        address,
-        near,
-      );
+        const result = await account.signAndSendTrx(trx);
 
-      const result = await account.signAndSendTrx(trx);
+        const logs = result.receipts_outcome[0].outcome?.logs[0];
 
-      const logs = result.receipts_outcome[0].outcome?.logs[0];
+        const logsParsed = JSON.parse(logs);
 
-      const logsParsed = JSON.parse(logs);
-
-      if (logsParsed?.params.id) {
-        royaltiesBuy[String(logsParsed?.params.id)] = Number(item.percentage) * 100;
+        if (logsParsed?.params.id) {
+          royaltiesBuy[String(logsParsed?.params.id)] = Number(item.percentage) * 100;
+        }
       }
     }
 
