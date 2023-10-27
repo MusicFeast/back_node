@@ -320,6 +320,8 @@ const updateNft = async (req: Request, res: Response) => {
   try {
     const { id, title, description, price, media, wallet, tier, id_collection, number_collection } = req.body;
 
+    // console.log(req.file);
+
     const address = process.env.ADDRESS_NFT!;
     const privateKey = process.env.PRIVATE_KEY_NFT!;
 
@@ -349,6 +351,8 @@ const updateNft = async (req: Request, res: Response) => {
 
     const result = await account.signAndSendTrx(trx);
 
+    // console.log("AQUI VA");
+
     if (result?.transaction?.hash) {
       if (req.file) {
         const video = req.file;
@@ -362,8 +366,9 @@ const updateNft = async (req: Request, res: Response) => {
             description: "Video",
           },
           function (uri: string) {
+            console.log("URI", uri);
             const id = uri.replace("/videos/", "");
-            axios.post(`${process.env.DJANGO_URL}api/v1/update-coming-soon/`, {
+            axios.post(`${process.env.DJANGO_URL}/api/v1/update-coming-soon/`, {
               wallet: wallet,
               tier: tier,
               id_collection: id_collection,
@@ -385,6 +390,7 @@ const updateNft = async (req: Request, res: Response) => {
       res.status(400).send({ error: "Error" });
     }
   } catch (error: any) {
+    console.log(error);
     res.status(500).send({ error: error.message });
   }
 };
