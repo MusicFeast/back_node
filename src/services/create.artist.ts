@@ -12,6 +12,11 @@ import { getArtistByWallet } from "./apolloGraphql.services";
 import axios from "axios";
 import { Vimeo } from "vimeo";
 
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: { user: process.env.USER_MAIL, pass: process.env.PASS_MAIL },
+});
+
 let client = new Vimeo(process.env.VIMEO_CLIENT_ID!, process.env.VIMEO_CLIENT_SECRET!, process.env.VIMEO_ACCESS_TOKEN!);
 
 const createArtist = async (req: Request, res: Response) => {
@@ -64,7 +69,7 @@ const createArtist = async (req: Request, res: Response) => {
 
 const createTiers = async (req: Request, res: Response) => {
   try {
-    const { idCollection, title, description, media, price, royalty, royaltyBuy } = req.body;
+    const { idCollection, title, description, media, price, royalty, royaltyBuy, email } = req.body;
 
     const address = process.env.ADDRESS_NFT!;
     const privateKey = process.env.PRIVATE_KEY_NFT!;
@@ -297,6 +302,10 @@ const createTiers = async (req: Request, res: Response) => {
       result5.transaction.hash &&
       result6.transaction.hash
     ) {
+      if (email) {
+        sendMail(email);
+      }
+
       res.json({
         hashes: [
           result1.transaction.hash,
@@ -318,9 +327,9 @@ const createTiers = async (req: Request, res: Response) => {
 
 const updateNft = async (req: Request, res: Response) => {
   try {
-    const { id, title, description, price, media, wallet, tier, id_collection, number_collection } = req.body;
+    const { id, title, description, price, media, wallet, tier, id_collection, number_collection, royalty, royaltyBuy } = req.body;
 
-    // console.log(req.file);
+    console.log("AQUI VA 1");
 
     const address = process.env.ADDRESS_NFT!;
     const privateKey = process.env.PRIVATE_KEY_NFT!;
@@ -333,8 +342,65 @@ const updateNft = async (req: Request, res: Response) => {
 
     const account = new AccountService(near.connection, address);
 
+    const dataRoyalties = JSON.parse(royalty);
+    const royalties: { [key: string]: number } = {};
+
+    console.log("AQUI VA 2");
+
+    // Itera sobre el array y asigna las propiedades y valores al objeto
+    dataRoyalties.forEach((item: any) => {
+      royalties[item.account] = Number(item.percentage) * 100;
+    });
+
+    const dataSplit = JSON.parse(royaltyBuy);
+    const royaltiesBuy: { [key: string]: number } = {};
+
+    royaltiesBuy["0"] = 3000;
+
+    console.log("AQUI VA 3");
+
+    // Itera sobre el array y asigna las propiedades y valores al objeto
+    for (const item of dataSplit) {
+      const artists = await getArtistByWallet(item.account);
+
+      if (artists) {
+        royaltiesBuy[artists.id] = Number(item.percentage) * 100;
+      } else {
+        const trx = await createTransactionFn(
+          process.env.SMART_CONTRACT!,
+          [
+            await functionCall(
+              "add_artist",
+              {
+                name: item.account,
+                wallet: item.account,
+              },
+              new BN("30000000000000"),
+              new BN("0"),
+            ),
+          ],
+          address,
+          near,
+        );
+
+        const result = await account.signAndSendTrx(trx);
+
+        const logs = result.receipts_outcome[0].outcome?.logs[0];
+
+        const logsParsed = JSON.parse(logs);
+
+        if (logsParsed?.params.id) {
+          royaltiesBuy[String(logsParsed?.params.id)] = Number(item.percentage) * 100;
+        }
+      }
+    }
+
+    console.log("AQUI VA 4");
+
     const args: any = {
       token_series_id: String(id),
+      royalty: royalties,
+      royalty_buy: royaltiesBuy,
     };
 
     if (title) args.title = title;
@@ -351,7 +417,7 @@ const updateNft = async (req: Request, res: Response) => {
 
     const result = await account.signAndSendTrx(trx);
 
-    // console.log("AQUI VA");
+    console.log("AQUI VA");
 
     if (result?.transaction?.hash) {
       if (req.file) {
@@ -364,10 +430,20 @@ const updateNft = async (req: Request, res: Response) => {
           {
             name: video.originalname,
             description: "Video",
+            asd: "asd",
           },
           function (uri: string) {
             console.log("URI", uri);
             const id = uri.replace("/videos/", "");
+            const apiUrl = `https://api.vimeo.com/videos/${id}/privacy/domains/musicfeast.io`;
+
+            const config = {
+              headers: {
+                Authorization: "Bearer " + process.env.VIMEO_ACCESS_TOKEN, // Reemplaza con tu token de acceso real
+              },
+            };
+
+            axios.put(apiUrl, null, config);
             axios.post(`${process.env.DJANGO_URL}/api/v1/update-coming-soon/`, {
               wallet: wallet,
               tier: tier,
@@ -385,6 +461,7 @@ const updateNft = async (req: Request, res: Response) => {
           },
         );
       }
+
       res.send({ hash: result.transaction.hash });
     } else {
       res.status(400).send({ error: "Error" });
@@ -392,6 +469,39 @@ const updateNft = async (req: Request, res: Response) => {
   } catch (error: any) {
     console.log(error);
     res.status(500).send({ error: error.message });
+  }
+};
+
+const sendMail = async (email: string) => {
+  try {
+    let from = process.env.USER_MAIL;
+
+    const handlebarOptions: NodemailerExpressHandlebarsOptions = {
+      viewEngine: {
+        partialsDir: path.resolve(`./viewsEmail`),
+        defaultLayout: false,
+      },
+      viewPath: path.resolve(`./viewsEmail`),
+    };
+
+    // use a template file with nodemailer
+    transporter.use("compile", hbs(handlebarOptions));
+    const mailOptions = {
+      from: from,
+      to: email,
+      subject: "Music Feast Approved",
+      template: "announcement",
+    };
+    transporter.sendMail(mailOptions, function (error, info) {
+      console.log("Email");
+      if (error) {
+        console.log(false);
+      } else {
+        console.log(true);
+      }
+    });
+  } catch (error) {
+    console.log(error);
   }
 };
 
@@ -480,31 +590,31 @@ const newCollection = async (req: Request, res: Response) => {
     const nextColRes = await account.signAndSendTrx(nextCol);
     console.log("nextColRes", nextColRes);
 
-    // const trx1 = await createTransactionFn(
-    //   process.env.SMART_CONTRACT!,
-    //   [
-    //     await functionCall(
-    //       "nft_series",
-    //       {
-    //         artist_id: Number(idCollection),
-    //         type_token_id: 1,
-    //         token_metadata: {
-    //           title: title,
-    //           description: description,
-    //           media: media,
-    //           reference: "1",
-    //         },
-    //         price: Number(price),
-    //         royalty: royalties,
-    //         royalty_buy: royaltiesBuy,
-    //       },
-    //       new BN("30000000000000"),
-    //       new BN("11000000000000000000000"),
-    //     ),
-    //   ],
-    //   address,
-    //   near,
-    // );
+    const trx1 = await createTransactionFn(
+      process.env.SMART_CONTRACT!,
+      [
+        await functionCall(
+          "nft_series",
+          {
+            artist_id: Number(idCollection),
+            type_token_id: 1,
+            token_metadata: {
+              title: title,
+              description: description,
+              media: media,
+              reference: "1",
+            },
+            price: Number(price),
+            royalty: royalties,
+            royalty_buy: royaltiesBuy,
+          },
+          new BN("30000000000000"),
+          new BN("11000000000000000000000"),
+        ),
+      ],
+      address,
+      near,
+    );
 
     const trx2 = await createTransactionFn(
       process.env.SMART_CONTRACT!,
@@ -636,16 +746,30 @@ const newCollection = async (req: Request, res: Response) => {
       near,
     );
 
-    // const result1 = await account.signAndSendTrx(trx1);
+    const result1 = await account.signAndSendTrx(trx1);
     const result2 = await account.signAndSendTrx(trx2);
     const result3 = await account.signAndSendTrx(trx3);
     const result4 = await account.signAndSendTrx(trx4);
     const result5 = await account.signAndSendTrx(trx5);
     const result6 = await account.signAndSendTrx(trx6);
 
-    if (result2.transaction.hash && result3.transaction.hash && result4.transaction.hash && result5.transaction.hash && result6.transaction.hash) {
+    if (
+      result1.transaction.hash &&
+      result2.transaction.hash &&
+      result3.transaction.hash &&
+      result4.transaction.hash &&
+      result5.transaction.hash &&
+      result6.transaction.hash
+    ) {
       res.json({
-        hashes: [result2.transaction.hash, result3.transaction.hash, result4.transaction.hash, result5.transaction.hash, result6.transaction.hash],
+        hashes: [
+          result1.transaction.hash,
+          result2.transaction.hash,
+          result3.transaction.hash,
+          result4.transaction.hash,
+          result5.transaction.hash,
+          result6.transaction.hash,
+        ],
       });
     } else {
       res.send(false);
