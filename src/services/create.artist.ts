@@ -140,7 +140,7 @@ const createTiers = async (req: Request, res: Response) => {
             artist_id: Number(idCollection),
             type_token_id: 1,
             token_metadata: {
-              title: title,
+              title: "TIER1 (Access Pass)",
               description: description,
               media: media,
               reference: "1",
@@ -166,7 +166,7 @@ const createTiers = async (req: Request, res: Response) => {
             artist_id: Number(idCollection),
             type_token_id: 2,
             token_metadata: {
-              title: "Appetizer",
+              title: "TIER2 (Video)",
               description:
                 "<p>Coming Soon</p> <ul>  <li>more exclusive content</li>  <li>more exclusive content</li> </ul> <p>The next tiers that will be released will have special exclusive content strictly for the community members</p> <p>Once you purchase the next tiers, it will unlock special goods and experiences in which you can either hold or sell back to other community members.</p>",
               media: "https://bafybeiejaqv6r7iz6cxtdkwgqw346bwrvz2kz5vdt5zeqdjboxipn62xwq.ipfs.w3s.link/coming%20soon.jpeg",
@@ -192,7 +192,7 @@ const createTiers = async (req: Request, res: Response) => {
             artist_id: Number(idCollection),
             type_token_id: 3,
             token_metadata: {
-              title: "Soup",
+              title: "TIER3 (Merch)",
               description:
                 "<p>Coming Soon</p> <ul>  <li>more exclusive content</li>  <li>more exclusive content</li> </ul> <p>The next tiers that will be released will have special exclusive content strictly for the community members</p> <p>Once you purchase the next tiers, it will unlock special goods and experiences in which you can either hold or sell back to other community members.</p>",
               media: "https://bafybeiejaqv6r7iz6cxtdkwgqw346bwrvz2kz5vdt5zeqdjboxipn62xwq.ipfs.w3s.link/coming%20soon.jpeg",
@@ -218,7 +218,7 @@ const createTiers = async (req: Request, res: Response) => {
             artist_id: Number(idCollection),
             type_token_id: 4,
             token_metadata: {
-              title: "Salad",
+              title: "TIER4 (Merch)",
               description:
                 "<p>Coming Soon</p> <ul>  <li>more exclusive content</li>  <li>more exclusive content</li> </ul> <p>The next tiers that will be released will have special exclusive content strictly for the community members</p> <p>Once you purchase the next tiers, it will unlock special goods and experiences in which you can either hold or sell back to other community members.</p>",
               media: "https://bafybeiejaqv6r7iz6cxtdkwgqw346bwrvz2kz5vdt5zeqdjboxipn62xwq.ipfs.w3s.link/coming%20soon.jpeg",
@@ -244,7 +244,7 @@ const createTiers = async (req: Request, res: Response) => {
             artist_id: Number(idCollection),
             type_token_id: 5,
             token_metadata: {
-              title: "Main Course",
+              title: "TIER5 (One on One)",
               description:
                 "<p>Coming Soon</p> <ul>  <li>more exclusive content</li>  <li>more exclusive content</li> </ul> <p>The next tiers that will be released will have special exclusive content strictly for the community members</p> <p>Once you purchase the next tiers, it will unlock special goods and experiences in which you can either hold or sell back to other community members.</p>",
               media: "https://bafybeiejaqv6r7iz6cxtdkwgqw346bwrvz2kz5vdt5zeqdjboxipn62xwq.ipfs.w3s.link/coming%20soon.jpeg",
@@ -270,7 +270,7 @@ const createTiers = async (req: Request, res: Response) => {
             artist_id: Number(idCollection),
             type_token_id: 6,
             token_metadata: {
-              title: "Dessert",
+              title: "TIER6 (Auction)",
               description:
                 "<p>Coming Soon</p> <ul>  <li>more exclusive content</li>  <li>more exclusive content</li> </ul> <p>The next tiers that will be released will have special exclusive content strictly for the community members</p> <p>Once you purchase the next tiers, it will unlock special goods and experiences in which you can either hold or sell back to other community members.</p>",
               media: "https://bafybeiejaqv6r7iz6cxtdkwgqw346bwrvz2kz5vdt5zeqdjboxipn62xwq.ipfs.w3s.link/coming%20soon.jpeg",
@@ -421,7 +421,7 @@ const updateNft = async (req: Request, res: Response) => {
 
     if (result?.transaction?.hash) {
       if (req.file) {
-        const video = req.file;
+        const video: any = req.file;
 
         console.log("VIDEO", video);
 
@@ -429,7 +429,7 @@ const updateNft = async (req: Request, res: Response) => {
           wallet: wallet,
           tier: tier,
           id_collection: id_collection,
-          vimeo_id: video.originalname,
+          vimeo_id: video.key,
           number_collection: number_collection,
         });
 
@@ -609,7 +609,7 @@ const newCollection = async (req: Request, res: Response) => {
             artist_id: Number(idCollection),
             type_token_id: 1,
             token_metadata: {
-              title: title,
+              title: "TIER1 (Access Pass)",
               description: description,
               media: media,
               reference: "1",
@@ -635,7 +635,7 @@ const newCollection = async (req: Request, res: Response) => {
             artist_id: Number(idCollection),
             type_token_id: 2,
             token_metadata: {
-              title: "Appetizer",
+              title: "TIER2 (Video)",
               description:
                 "<p>Coming Soon</p> <ul>  <li>more exclusive content</li>  <li>more exclusive content</li> </ul> <p>The next tiers that will be released will have special exclusive content strictly for the community members</p> <p>Once you purchase the next tiers, it will unlock special goods and experiences in which you can either hold or sell back to other community members.</p>",
               media: "https://bafybeiejaqv6r7iz6cxtdkwgqw346bwrvz2kz5vdt5zeqdjboxipn62xwq.ipfs.w3s.link/coming%20soon.jpeg",
@@ -661,7 +661,7 @@ const newCollection = async (req: Request, res: Response) => {
             artist_id: Number(idCollection),
             type_token_id: 3,
             token_metadata: {
-              title: "Soup",
+              title: "TIER3 (Merch)",
               description:
                 "<p>Coming Soon</p> <ul>  <li>more exclusive content</li>  <li>more exclusive content</li> </ul> <p>The next tiers that will be released will have special exclusive content strictly for the community members</p> <p>Once you purchase the next tiers, it will unlock special goods and experiences in which you can either hold or sell back to other community members.</p>",
               media: "https://bafybeiejaqv6r7iz6cxtdkwgqw346bwrvz2kz5vdt5zeqdjboxipn62xwq.ipfs.w3s.link/coming%20soon.jpeg",
@@ -687,7 +687,7 @@ const newCollection = async (req: Request, res: Response) => {
             artist_id: Number(idCollection),
             type_token_id: 4,
             token_metadata: {
-              title: "Salad",
+              title: "TIER4 (Merch)",
               description:
                 "<p>Coming Soon</p> <ul>  <li>more exclusive content</li>  <li>more exclusive content</li> </ul> <p>The next tiers that will be released will have special exclusive content strictly for the community members</p> <p>Once you purchase the next tiers, it will unlock special goods and experiences in which you can either hold or sell back to other community members.</p>",
               media: "https://bafybeiejaqv6r7iz6cxtdkwgqw346bwrvz2kz5vdt5zeqdjboxipn62xwq.ipfs.w3s.link/coming%20soon.jpeg",
@@ -713,7 +713,7 @@ const newCollection = async (req: Request, res: Response) => {
             artist_id: Number(idCollection),
             type_token_id: 5,
             token_metadata: {
-              title: "Main Course",
+              title: "TIER5 (One on One)",
               description:
                 "<p>Coming Soon</p> <ul>  <li>more exclusive content</li>  <li>more exclusive content</li> </ul> <p>The next tiers that will be released will have special exclusive content strictly for the community members</p> <p>Once you purchase the next tiers, it will unlock special goods and experiences in which you can either hold or sell back to other community members.</p>",
               media: "https://bafybeiejaqv6r7iz6cxtdkwgqw346bwrvz2kz5vdt5zeqdjboxipn62xwq.ipfs.w3s.link/coming%20soon.jpeg",
@@ -739,7 +739,7 @@ const newCollection = async (req: Request, res: Response) => {
             artist_id: Number(idCollection),
             type_token_id: 6,
             token_metadata: {
-              title: "Dessert",
+              title: "TIER6 (Auction)",
               description:
                 "<p>Coming Soon</p> <ul>  <li>more exclusive content</li>  <li>more exclusive content</li> </ul> <p>The next tiers that will be released will have special exclusive content strictly for the community members</p> <p>Once you purchase the next tiers, it will unlock special goods and experiences in which you can either hold or sell back to other community members.</p>",
               media: "https://bafybeiejaqv6r7iz6cxtdkwgqw346bwrvz2kz5vdt5zeqdjboxipn62xwq.ipfs.w3s.link/coming%20soon.jpeg",

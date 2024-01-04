@@ -16,11 +16,11 @@ const s3Config = new S3Client({
 const upload = multer({
   storage: multerS3({
     s3: s3Config,
-    acl: "public-read",
+    acl: "private",
     bucket: process.env.AWS_STORAGE_BUCKET_NAME!,
     metadata: function (req: any, file, cb) {
-      const userId = req.client._httpMessage.req.params.userID as String;
-      cb(null, { fieldName: file.fieldname, userId });
+      console.log("FILe", file);
+      cb(null, { fieldName: file.fieldname });
     },
     key: function (req: any, file, cb) {
       const fileName = generateFileName(file.originalname, file.fieldname);
@@ -30,9 +30,9 @@ const upload = multer({
 });
 
 const generateFileName = (originalFileName: string, fieldname: string) => {
-  // const uuid = uuidv4();
+  const uuid = uuidv4();
   const extension = originalFileName.split(".").pop();
-  return `${fieldname}.${extension}`;
+  return `${uuid}.${extension}`;
 };
 
 export default { upload };
