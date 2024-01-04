@@ -423,43 +423,53 @@ const updateNft = async (req: Request, res: Response) => {
       if (req.file) {
         const video = req.file;
 
-        const videoPath = path.join(__dirname, "../../uploads/" + video.originalname);
+        console.log("VIDEO", video);
 
-        client.upload(
-          videoPath,
-          {
-            name: video.originalname,
-            description: "Video",
-            asd: "asd",
-          },
-          function (uri: string) {
-            console.log("URI", uri);
-            const id = uri.replace("/videos/", "");
-            const apiUrl = `https://api.vimeo.com/videos/${id}/privacy/domains/musicfeast.io`;
+        axios.post(`${process.env.DJANGO_URL}/api/v1/update-coming-soon/`, {
+          wallet: wallet,
+          tier: tier,
+          id_collection: id_collection,
+          vimeo_id: video.originalname,
+          number_collection: number_collection,
+        });
 
-            const config = {
-              headers: {
-                Authorization: "Bearer " + process.env.VIMEO_ACCESS_TOKEN, // Reemplaza con tu token de acceso real
-              },
-            };
+        // const videoPath = path.join(__dirname, "../../uploads/" + video.originalname);
 
-            axios.put(apiUrl, null, config);
-            axios.post(`${process.env.DJANGO_URL}/api/v1/update-coming-soon/`, {
-              wallet: wallet,
-              tier: tier,
-              id_collection: id_collection,
-              vimeo_id: id,
-              number_collection: number_collection,
-            });
-          },
-          function (bytes_uploaded: number, bytes_total: number) {
-            var percentage = ((bytes_uploaded / bytes_total) * 100).toFixed(2);
-            console.log(bytes_uploaded, bytes_total, percentage + "%");
-          },
-          function (error: string) {
-            console.log("Failed because: " + error);
-          },
-        );
+        // client.upload(
+        //   videoPath,
+        //   {
+        //     name: video.originalname,
+        //     description: "Video",
+        //     asd: "asd",
+        //   },
+        //   function (uri: string) {
+        //     console.log("URI", uri);
+        //     const id = uri.replace("/videos/", "");
+        //     const apiUrl = `https://api.vimeo.com/videos/${id}/privacy/domains/musicfeast.io`;
+
+        //     const config = {
+        //       headers: {
+        //         Authorization: "Bearer " + process.env.VIMEO_ACCESS_TOKEN, // Reemplaza con tu token de acceso real
+        //       },
+        //     };
+
+        //     axios.put(apiUrl, null, config);
+        //     axios.post(`${process.env.DJANGO_URL}/api/v1/update-coming-soon/`, {
+        //       wallet: wallet,
+        //       tier: tier,
+        //       id_collection: id_collection,
+        //       vimeo_id: id,
+        //       number_collection: number_collection,
+        //     });
+        //   },
+        //   function (bytes_uploaded: number, bytes_total: number) {
+        //     var percentage = ((bytes_uploaded / bytes_total) * 100).toFixed(2);
+        //     console.log(bytes_uploaded, bytes_total, percentage + "%");
+        //   },
+        //   function (error: string) {
+        //     console.log("Failed because: " + error);
+        //   },
+        // );
       }
 
       res.send({ hash: result.transaction.hash });
