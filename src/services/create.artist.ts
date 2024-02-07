@@ -327,7 +327,7 @@ const createTiers = async (req: Request, res: Response) => {
 
 const updateNft = async (req: Request, res: Response) => {
   try {
-    const { id, title, description, price, media, wallet, tier, id_collection, number_collection, royalty, royaltyBuy } = req.body;
+    const { id, title, description, price, media, wallet, tier, id_collection, number_collection, royalty, royaltyBuy, copies } = req.body;
 
     console.log("AQUI VA 1");
 
@@ -404,6 +404,7 @@ const updateNft = async (req: Request, res: Response) => {
     };
 
     if (title) args.title = title;
+    if (copies) args.copies = copies;
     if (description) args.description = description;
     if (media) args.media = media;
     if (price) args.price = Number(price);
