@@ -60,9 +60,11 @@ const createArtist = async (req: Request, res: Response) => {
     if (logsParsed?.params.id) {
       res.send({ id_collection: logsParsed?.params.id });
     } else {
+      console.log("PARAMS", logsParsed?.params);
       res.send(false);
     }
   } catch (error) {
+    console.log("ERROR", error);
     res.send(false);
   }
 };
@@ -404,7 +406,7 @@ const updateNft = async (req: Request, res: Response) => {
     };
 
     if (title) args.title = title;
-    if (copies) args.copies = copies;
+    if (copies) args.copies = Number(copies) || null;
     if (description) args.description = description;
     if (media) args.media = media;
     if (price) args.price = Number(price);
@@ -418,19 +420,25 @@ const updateNft = async (req: Request, res: Response) => {
 
     const result = await account.signAndSendTrx(trx);
 
-    console.log("AQUI VA");
-
     if (result?.transaction?.hash) {
-      if (req.file) {
-        const video: any = req.file;
-
-        console.log("VIDEO", video);
-
+      const files: any = req.files;
+      if (files.audio) {
         axios.post(`${process.env.DJANGO_URL}/api/v1/update-coming-soon/`, {
           wallet: wallet,
           tier: tier,
           id_collection: id_collection,
-          vimeo_id: video.key,
+          media_id: files.audio[0].key,
+          type_media: "audio",
+          number_collection: number_collection,
+        });
+      }
+      if (files.video) {
+        axios.post(`${process.env.DJANGO_URL}/api/v1/update-coming-soon/`, {
+          wallet: wallet,
+          tier: tier,
+          id_collection: id_collection,
+          media_id: files.video[0].key,
+          type_media: "video",
           number_collection: number_collection,
         });
 

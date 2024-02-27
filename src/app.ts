@@ -44,7 +44,15 @@ app.post("/award-nft/", awardNft);
 app.post("/start-redeem", sendRedeemer);
 app.post("/create-artist/", createArtist);
 app.post("/create-tiers/", createTiers);
-app.post("/update-nft/", multerConfig.upload.single("video"), updateNft);
+
+app.post(
+  "/update-nft/",
+  multerConfig.upload.fields([
+    { name: "audio", maxCount: 1 },
+    { name: "video", maxCount: 1 },
+  ]),
+  updateNft,
+);
 app.post("/new-collection/", newCollection);
 app.post("/drive-service/", driveController.driveService);
 
