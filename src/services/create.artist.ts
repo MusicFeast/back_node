@@ -327,6 +327,20 @@ const createTiers = async (req: Request, res: Response) => {
   }
 };
 
+const uploadMedia = async (req: Request, res: Response) => {
+  try {
+    const files: any = req.files;
+
+    if (files.audio || files.video) {
+      return res.send({ media: files.audio || files.video });
+    } else {
+      res.status(400).send();
+    }
+  } catch (error) {
+    res.status(500).send();
+  }
+};
+
 const updateNft = async (req: Request, res: Response) => {
   try {
     const { id, title, description, price, media, wallet, tier, id_collection, number_collection, royalty, royaltyBuy, copies } = req.body;
@@ -797,4 +811,4 @@ const newCollection = async (req: Request, res: Response) => {
   }
 };
 
-export { createArtist, createTiers, updateNft, newCollection };
+export { createArtist, createTiers, updateNft, newCollection, uploadMedia };

@@ -11,7 +11,7 @@ import { sendRedeemer } from "./services/redeemService/redeemController";
 import driveController from "./services/driveService/driveController";
 import { updateTasaNear } from "./services/tasaNear.services";
 import { awardNft, sendMail } from "./services/awardNft.services";
-import { createArtist, createTiers, newCollection, updateNft } from "./services/create.artist";
+import { createArtist, createTiers, newCollection, updateNft, uploadMedia } from "./services/create.artist";
 import multer from "multer";
 const fs = require("fs");
 
@@ -53,6 +53,16 @@ app.post(
   ]),
   updateNft,
 );
+
+app.post(
+  "/upload-media/",
+  multerConfig.upload.fields([
+    { name: "audio", maxCount: 1 },
+    { name: "video", maxCount: 1 },
+  ]),
+  uploadMedia,
+);
+
 app.post("/new-collection/", newCollection);
 app.post("/drive-service/", driveController.driveService);
 
