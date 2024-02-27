@@ -428,7 +428,6 @@ const updateNft = async (req: Request, res: Response) => {
           tier: tier,
           id_collection: id_collection,
           media_id: files.audio[0].key,
-          type_media: "audio",
           number_collection: number_collection,
         });
       }
@@ -438,7 +437,6 @@ const updateNft = async (req: Request, res: Response) => {
           tier: tier,
           id_collection: id_collection,
           media_id: files.video[0].key,
-          type_media: "video",
           number_collection: number_collection,
         });
 
