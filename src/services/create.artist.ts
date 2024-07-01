@@ -44,11 +44,11 @@ const createArtist = async (req: Request, res: Response) => {
             wallet: walletArtist,
           },
           new BN("30000000000000"),
-          new BN("0"),
+          new BN("0")
         ),
       ],
       address,
-      near,
+      near
     );
 
     const result = await account.signAndSendTrx(trx);
@@ -114,11 +114,11 @@ const createTiers = async (req: Request, res: Response) => {
                 wallet: item.account,
               },
               new BN("30000000000000"),
-              new BN("0"),
+              new BN("0")
             ),
           ],
           address,
-          near,
+          near
         );
 
         const result = await account.signAndSendTrx(trx);
@@ -152,11 +152,11 @@ const createTiers = async (req: Request, res: Response) => {
             royalty_buy: royaltiesBuy,
           },
           new BN("30000000000000"),
-          new BN("11000000000000000000000"),
+          new BN("11000000000000000000000")
         ),
       ],
       address,
-      near,
+      near
     );
 
     const trx2 = await createTransactionFn(
@@ -171,18 +171,19 @@ const createTiers = async (req: Request, res: Response) => {
               title: "TIER2 (Video)",
               description:
                 "<p>Coming Soon</p> <ul>  <li>more exclusive content</li>  <li>more exclusive content</li> </ul> <p>The next tiers that will be released will have special exclusive content strictly for the community members</p> <p>Once you purchase the next tiers, it will unlock special goods and experiences in which you can either hold or sell back to other community members.</p>",
-              media: "https://bafybeiejaqv6r7iz6cxtdkwgqw346bwrvz2kz5vdt5zeqdjboxipn62xwq.ipfs.w3s.link/coming%20soon.jpeg",
+              media:
+                "https://bafybeiejaqv6r7iz6cxtdkwgqw346bwrvz2kz5vdt5zeqdjboxipn62xwq.ipfs.w3s.link/coming%20soon.jpeg",
               reference: "2",
             },
             royalty: royalties,
             royalty_buy: royaltiesBuy,
           },
           new BN("30000000000000"),
-          new BN("11000000000000000000000"),
+          new BN("11000000000000000000000")
         ),
       ],
       address,
-      near,
+      near
     );
 
     const trx3 = await createTransactionFn(
@@ -197,18 +198,19 @@ const createTiers = async (req: Request, res: Response) => {
               title: "TIER3 (Merch)",
               description:
                 "<p>Coming Soon</p> <ul>  <li>more exclusive content</li>  <li>more exclusive content</li> </ul> <p>The next tiers that will be released will have special exclusive content strictly for the community members</p> <p>Once you purchase the next tiers, it will unlock special goods and experiences in which you can either hold or sell back to other community members.</p>",
-              media: "https://bafybeiejaqv6r7iz6cxtdkwgqw346bwrvz2kz5vdt5zeqdjboxipn62xwq.ipfs.w3s.link/coming%20soon.jpeg",
+              media:
+                "https://bafybeiejaqv6r7iz6cxtdkwgqw346bwrvz2kz5vdt5zeqdjboxipn62xwq.ipfs.w3s.link/coming%20soon.jpeg",
               reference: "3",
             },
             royalty: royalties,
             royalty_buy: royaltiesBuy,
           },
           new BN("30000000000000"),
-          new BN("11000000000000000000000"),
+          new BN("11000000000000000000000")
         ),
       ],
       address,
-      near,
+      near
     );
 
     const trx4 = await createTransactionFn(
@@ -223,18 +225,19 @@ const createTiers = async (req: Request, res: Response) => {
               title: "TIER4 (Merch)",
               description:
                 "<p>Coming Soon</p> <ul>  <li>more exclusive content</li>  <li>more exclusive content</li> </ul> <p>The next tiers that will be released will have special exclusive content strictly for the community members</p> <p>Once you purchase the next tiers, it will unlock special goods and experiences in which you can either hold or sell back to other community members.</p>",
-              media: "https://bafybeiejaqv6r7iz6cxtdkwgqw346bwrvz2kz5vdt5zeqdjboxipn62xwq.ipfs.w3s.link/coming%20soon.jpeg",
+              media:
+                "https://bafybeiejaqv6r7iz6cxtdkwgqw346bwrvz2kz5vdt5zeqdjboxipn62xwq.ipfs.w3s.link/coming%20soon.jpeg",
               reference: "4",
             },
             royalty: royalties,
             royalty_buy: royaltiesBuy,
           },
           new BN("30000000000000"),
-          new BN("11000000000000000000000"),
+          new BN("11000000000000000000000")
         ),
       ],
       address,
-      near,
+      near
     );
 
     const trx5 = await createTransactionFn(
@@ -249,18 +252,19 @@ const createTiers = async (req: Request, res: Response) => {
               title: "TIER5 (One on One)",
               description:
                 "<p>Coming Soon</p> <ul>  <li>more exclusive content</li>  <li>more exclusive content</li> </ul> <p>The next tiers that will be released will have special exclusive content strictly for the community members</p> <p>Once you purchase the next tiers, it will unlock special goods and experiences in which you can either hold or sell back to other community members.</p>",
-              media: "https://bafybeiejaqv6r7iz6cxtdkwgqw346bwrvz2kz5vdt5zeqdjboxipn62xwq.ipfs.w3s.link/coming%20soon.jpeg",
+              media:
+                "https://bafybeiejaqv6r7iz6cxtdkwgqw346bwrvz2kz5vdt5zeqdjboxipn62xwq.ipfs.w3s.link/coming%20soon.jpeg",
               reference: "5",
             },
             royalty: royalties,
             royalty_buy: royaltiesBuy,
           },
           new BN("30000000000000"),
-          new BN("11000000000000000000000"),
+          new BN("11000000000000000000000")
         ),
       ],
       address,
-      near,
+      near
     );
 
     const trx6 = await createTransactionFn(
@@ -275,18 +279,19 @@ const createTiers = async (req: Request, res: Response) => {
               title: "TIER6 (Auction)",
               description:
                 "<p>Coming Soon</p> <ul>  <li>more exclusive content</li>  <li>more exclusive content</li> </ul> <p>The next tiers that will be released will have special exclusive content strictly for the community members</p> <p>Once you purchase the next tiers, it will unlock special goods and experiences in which you can either hold or sell back to other community members.</p>",
-              media: "https://bafybeiejaqv6r7iz6cxtdkwgqw346bwrvz2kz5vdt5zeqdjboxipn62xwq.ipfs.w3s.link/coming%20soon.jpeg",
+              media:
+                "https://bafybeiejaqv6r7iz6cxtdkwgqw346bwrvz2kz5vdt5zeqdjboxipn62xwq.ipfs.w3s.link/coming%20soon.jpeg",
               reference: "6",
             },
             royalty: royalties,
             royalty_buy: royaltiesBuy,
           },
           new BN("30000000000000"),
-          new BN("11000000000000000000000"),
+          new BN("11000000000000000000000")
         ),
       ],
       address,
-      near,
+      near
     );
 
     const result1 = await account.signAndSendTrx(trx1);
@@ -343,7 +348,20 @@ const uploadMedia = async (req: Request, res: Response) => {
 
 const updateNft = async (req: Request, res: Response) => {
   try {
-    const { id, title, description, price, media, wallet, tier, id_collection, number_collection, royalty, royaltyBuy, copies } = req.body;
+    const {
+      id,
+      title,
+      description,
+      price,
+      media,
+      wallet,
+      tier,
+      id_collection,
+      number_collection,
+      royalty,
+      royaltyBuy,
+      copies,
+    } = req.body;
 
     console.log("AQUI VA 1");
 
@@ -392,11 +410,11 @@ const updateNft = async (req: Request, res: Response) => {
                 wallet: item.account,
               },
               new BN("30000000000000"),
-              new BN("0"),
+              new BN("0")
             ),
           ],
           address,
-          near,
+          near
         );
 
         const result = await account.signAndSendTrx(trx);
@@ -429,7 +447,7 @@ const updateNft = async (req: Request, res: Response) => {
       process.env.SMART_CONTRACT!,
       [await functionCall("update_nft_series", args, new BN("30000000000000"), new BN("0"))],
       address,
-      near,
+      near
     );
 
     const result = await account.signAndSendTrx(trx);
@@ -583,11 +601,11 @@ const newCollection = async (req: Request, res: Response) => {
                 wallet: item.account,
               },
               new BN("30000000000000"),
-              new BN("0"),
+              new BN("0")
             ),
           ],
           address,
-          near,
+          near
         );
 
         const result = await account.signAndSendTrx(trx);
@@ -611,11 +629,11 @@ const newCollection = async (req: Request, res: Response) => {
             artist_id: Number(idCollection),
           },
           new BN("30000000000000"),
-          new BN("0"),
+          new BN("0")
         ),
       ],
       address,
-      near,
+      near
     );
 
     const nextColRes = await account.signAndSendTrx(nextCol);
@@ -640,11 +658,11 @@ const newCollection = async (req: Request, res: Response) => {
             royalty_buy: royaltiesBuy,
           },
           new BN("30000000000000"),
-          new BN("11000000000000000000000"),
+          new BN("11000000000000000000000")
         ),
       ],
       address,
-      near,
+      near
     );
 
     const trx2 = await createTransactionFn(
@@ -659,18 +677,19 @@ const newCollection = async (req: Request, res: Response) => {
               title: "TIER2 (Video)",
               description:
                 "<p>Coming Soon</p> <ul>  <li>more exclusive content</li>  <li>more exclusive content</li> </ul> <p>The next tiers that will be released will have special exclusive content strictly for the community members</p> <p>Once you purchase the next tiers, it will unlock special goods and experiences in which you can either hold or sell back to other community members.</p>",
-              media: "https://bafybeiejaqv6r7iz6cxtdkwgqw346bwrvz2kz5vdt5zeqdjboxipn62xwq.ipfs.w3s.link/coming%20soon.jpeg",
+              media:
+                "https://bafybeiejaqv6r7iz6cxtdkwgqw346bwrvz2kz5vdt5zeqdjboxipn62xwq.ipfs.w3s.link/coming%20soon.jpeg",
               reference: "2",
             },
             royalty: royalties,
             royalty_buy: royaltiesBuy,
           },
           new BN("30000000000000"),
-          new BN("11000000000000000000000"),
+          new BN("11000000000000000000000")
         ),
       ],
       address,
-      near,
+      near
     );
 
     const trx3 = await createTransactionFn(
@@ -685,18 +704,19 @@ const newCollection = async (req: Request, res: Response) => {
               title: "TIER3 (Merch)",
               description:
                 "<p>Coming Soon</p> <ul>  <li>more exclusive content</li>  <li>more exclusive content</li> </ul> <p>The next tiers that will be released will have special exclusive content strictly for the community members</p> <p>Once you purchase the next tiers, it will unlock special goods and experiences in which you can either hold or sell back to other community members.</p>",
-              media: "https://bafybeiejaqv6r7iz6cxtdkwgqw346bwrvz2kz5vdt5zeqdjboxipn62xwq.ipfs.w3s.link/coming%20soon.jpeg",
+              media:
+                "https://bafybeiejaqv6r7iz6cxtdkwgqw346bwrvz2kz5vdt5zeqdjboxipn62xwq.ipfs.w3s.link/coming%20soon.jpeg",
               reference: "3",
             },
             royalty: royalties,
             royalty_buy: royaltiesBuy,
           },
           new BN("30000000000000"),
-          new BN("11000000000000000000000"),
+          new BN("11000000000000000000000")
         ),
       ],
       address,
-      near,
+      near
     );
 
     const trx4 = await createTransactionFn(
@@ -711,18 +731,19 @@ const newCollection = async (req: Request, res: Response) => {
               title: "TIER4 (Merch)",
               description:
                 "<p>Coming Soon</p> <ul>  <li>more exclusive content</li>  <li>more exclusive content</li> </ul> <p>The next tiers that will be released will have special exclusive content strictly for the community members</p> <p>Once you purchase the next tiers, it will unlock special goods and experiences in which you can either hold or sell back to other community members.</p>",
-              media: "https://bafybeiejaqv6r7iz6cxtdkwgqw346bwrvz2kz5vdt5zeqdjboxipn62xwq.ipfs.w3s.link/coming%20soon.jpeg",
+              media:
+                "https://bafybeiejaqv6r7iz6cxtdkwgqw346bwrvz2kz5vdt5zeqdjboxipn62xwq.ipfs.w3s.link/coming%20soon.jpeg",
               reference: "4",
             },
             royalty: royalties,
             royalty_buy: royaltiesBuy,
           },
           new BN("30000000000000"),
-          new BN("11000000000000000000000"),
+          new BN("11000000000000000000000")
         ),
       ],
       address,
-      near,
+      near
     );
 
     const trx5 = await createTransactionFn(
@@ -737,18 +758,19 @@ const newCollection = async (req: Request, res: Response) => {
               title: "TIER5 (One on One)",
               description:
                 "<p>Coming Soon</p> <ul>  <li>more exclusive content</li>  <li>more exclusive content</li> </ul> <p>The next tiers that will be released will have special exclusive content strictly for the community members</p> <p>Once you purchase the next tiers, it will unlock special goods and experiences in which you can either hold or sell back to other community members.</p>",
-              media: "https://bafybeiejaqv6r7iz6cxtdkwgqw346bwrvz2kz5vdt5zeqdjboxipn62xwq.ipfs.w3s.link/coming%20soon.jpeg",
+              media:
+                "https://bafybeiejaqv6r7iz6cxtdkwgqw346bwrvz2kz5vdt5zeqdjboxipn62xwq.ipfs.w3s.link/coming%20soon.jpeg",
               reference: "5",
             },
             royalty: royalties,
             royalty_buy: royaltiesBuy,
           },
           new BN("30000000000000"),
-          new BN("11000000000000000000000"),
+          new BN("11000000000000000000000")
         ),
       ],
       address,
-      near,
+      near
     );
 
     const trx6 = await createTransactionFn(
@@ -763,18 +785,19 @@ const newCollection = async (req: Request, res: Response) => {
               title: "TIER6 (Auction)",
               description:
                 "<p>Coming Soon</p> <ul>  <li>more exclusive content</li>  <li>more exclusive content</li> </ul> <p>The next tiers that will be released will have special exclusive content strictly for the community members</p> <p>Once you purchase the next tiers, it will unlock special goods and experiences in which you can either hold or sell back to other community members.</p>",
-              media: "https://bafybeiejaqv6r7iz6cxtdkwgqw346bwrvz2kz5vdt5zeqdjboxipn62xwq.ipfs.w3s.link/coming%20soon.jpeg",
+              media:
+                "https://bafybeiejaqv6r7iz6cxtdkwgqw346bwrvz2kz5vdt5zeqdjboxipn62xwq.ipfs.w3s.link/coming%20soon.jpeg",
               reference: "6",
             },
             royalty: royalties,
             royalty_buy: royaltiesBuy,
           },
           new BN("30000000000000"),
-          new BN("11000000000000000000000"),
+          new BN("11000000000000000000000")
         ),
       ],
       address,
-      near,
+      near
     );
 
     const result1 = await account.signAndSendTrx(trx1);
@@ -811,4 +834,110 @@ const newCollection = async (req: Request, res: Response) => {
   }
 };
 
-export { createArtist, createTiers, updateNft, newCollection, uploadMedia };
+const createEvent = async (req: Request, res: Response) => {
+  try {
+    const { idCollection, title, description, media, price, royalty, royaltyBuy, extra } = req.body;
+
+    const address = process.env.ADDRESS_NFT!;
+    const privateKey = process.env.PRIVATE_KEY_NFT!;
+
+    const keyStore = new keyStores.InMemoryKeyStore();
+
+    const keyPair = KeyPair.fromString(privateKey);
+    keyStore.setKey(process.env.NEAR_ENV!, address, keyPair);
+    const near = new Near(CONFIG(keyStore));
+
+    const account = new AccountService(near.connection, address);
+
+    const dataRoyalties = JSON.parse(royalty);
+    const royalties: { [key: string]: number } = {};
+
+    // Itera sobre el array y asigna las propiedades y valores al objeto
+    dataRoyalties.forEach((item: any) => {
+      royalties[item.account] = Number(item.percentage) * 100;
+    });
+
+    const dataSplit = JSON.parse(royaltyBuy);
+    const royaltiesBuy: { [key: string]: number } = {};
+
+    royaltiesBuy["0"] = 3000;
+
+    // Itera sobre el array y asigna las propiedades y valores al objeto
+    for (const item of dataSplit) {
+      const artists = await getArtistByWallet(item.account);
+
+      if (artists) {
+        royaltiesBuy[artists.id] = Number(item.percentage) * 100;
+      } else {
+        const trx = await createTransactionFn(
+          process.env.SMART_CONTRACT!,
+          [
+            await functionCall(
+              "add_artist",
+              {
+                name: item.account,
+                wallet: item.account,
+              },
+              new BN("30000000000000"),
+              new BN("0")
+            ),
+          ],
+          address,
+          near
+        );
+
+        const result = await account.signAndSendTrx(trx);
+
+        const logs = result.receipts_outcome[0].outcome?.logs[0];
+
+        const logsParsed = JSON.parse(logs);
+
+        if (logsParsed?.params.id) {
+          royaltiesBuy[String(logsParsed?.params.id)] = Number(item.percentage) * 100;
+        }
+      }
+    }
+
+    const trx = await createTransactionFn(
+      process.env.SMART_CONTRACT!,
+      [
+        await functionCall(
+          "nft_series",
+          {
+            artist_id: Number(idCollection),
+            type_token_id: 7,
+            token_metadata: {
+              title: title,
+              description: description,
+              media: media,
+              reference: "7",
+              extra,
+            },
+            price: Number(price),
+            royalty: royalties,
+            royalty_buy: royaltiesBuy,
+          },
+          new BN("30000000000000"),
+          new BN("11000000000000000000000")
+        ),
+      ],
+      address,
+      near
+    );
+
+    const result = await account.signAndSendTrx(trx);
+
+    if (result.transaction.hash) {
+      res.json({
+        hashes: [result.transaction.hash],
+      });
+    } else {
+      res.send(false);
+    }
+  } catch (error) {
+    console.log(error);
+    res.send(false);
+  }
+};
+
+export { createArtist, createTiers, updateNft, newCollection, uploadMedia, createEvent };
