@@ -25,8 +25,8 @@ import path from "path";
 
 const pinataSDK = require("@pinata/sdk");
 const pinata = new pinataSDK(
-  "2d7d4578a389f9aa8c07",
-  "bbc0eafd85df40edd68f5de5d583c4dcc9f69a6fbcb68e29e97c9c5a2516f49e"
+  "f1d9b9a0de834245bddc",
+  "bbdab25a4fbc098ee462a1f47cd26e1f2ffad8c4733e98f84f22c338799aa500"
 );
 
 import multerConfig from "./config/multer";
@@ -82,38 +82,44 @@ app.post("/new-collection/", newCollection);
 app.post("/drive-service/", driveController.driveService);
 
 app.post("/ipfs/", upload.single("uploaded_file"), function (req: any, res: any) {
-  if (req.file) {
-    const filePath = path.join("./uploads", req.file.filename);
-    const readableStreamForFile = fs.createReadStream(filePath);
+  try {
+    if (req.file) {
+      const filePath = path.join("./uploads", req.file.filename);
+      const readableStreamForFile = fs.createReadStream(filePath);
 
-    const options = {
-      pinataMetadata: {
-        name: req.file.filename + Date.now(),
-        keyvalues: {
-          customKey: "customValue",
-          customKey2: "customValue2",
+      const options = {
+        pinataMetadata: {
+          name: req.file.filename + Date.now(),
+          keyvalues: {
+            customKey: "customValue",
+            customKey2: "customValue2",
+          },
         },
-      },
-      pinataOptions: {
-        cidVersion: 0,
-      },
-    };
+        pinataOptions: {
+          cidVersion: 0,
+        },
+      };
 
-    pinata
-      .pinFileToIPFS(readableStreamForFile, options)
-      .then((result: any) => {
-        // handle results here
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-        }
-        res.json(result);
-      })
-      .catch((err: any) => {
-        // handle error here
-        res.status(500).json({ error: err.message });
-      });
-  } else {
-    res.status(400).json({ error: "No file uploaded" });
+      pinata
+        .pinFileToIPFS(readableStreamForFile, options)
+        .then((result: any) => {
+          // handle results here
+          if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+          }
+          res.json(result);
+        })
+        .catch((err: any) => {
+          // handle error here
+          console.log("err", err);
+          res.status(500).json({ error: err.message });
+        });
+    } else {
+      res.status(400).json({ error: "No file uploaded" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
