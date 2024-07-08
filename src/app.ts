@@ -21,6 +21,7 @@ import {
 } from "./services/create.artist";
 import multer from "multer";
 const fs = require("fs");
+import path from "path";
 
 const pinataSDK = require("@pinata/sdk");
 const pinata = new pinataSDK(
@@ -80,13 +81,14 @@ app.post(
 app.post("/new-collection/", newCollection);
 app.post("/drive-service/", driveController.driveService);
 
-app.post("/ipfs/", upload.single("uploaded_file"), function (req: any, res) {
+app.post("/ipfs/", upload.single("uploaded_file"), function (req: any, res: any) {
   if (req.file) {
-    // eslint-disable-next-line n/no-path-concat
-    const readableStreamForFile = fs.createReadStream(__dirname + "/storage/img/" + req.file.filename);
+    const filePath = path.join("./uploads", req.file.filename);
+    const readableStreamForFile = fs.createReadStream(filePath);
+
     const options = {
       pinataMetadata: {
-        name: req.body.name,
+        name: req.file.filename + Date.now(),
         keyvalues: {
           customKey: "customValue",
           customKey2: "customValue2",
@@ -96,24 +98,22 @@ app.post("/ipfs/", upload.single("uploaded_file"), function (req: any, res) {
         cidVersion: 0,
       },
     };
-    console.log(req.file);
+
     pinata
       .pinFileToIPFS(readableStreamForFile, options)
       .then((result: any) => {
         // handle results here
-        // eslint-disable-next-line n/no-path-concat
-        const path = __dirname + "/storage/img/" + "/" + req.file.filename;
-        if (fs.existsSync(path)) {
-          fs.unlinkSync(path);
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
         }
-        console.log(result);
         res.json(result);
       })
       .catch((err: any) => {
         // handle error here
-        res.json(err);
-        console.log(err);
+        res.status(500).json({ error: err.message });
       });
+  } else {
+    res.status(400).json({ error: "No file uploaded" });
   }
 });
 
