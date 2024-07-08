@@ -23,7 +23,10 @@ import multer from "multer";
 const fs = require("fs");
 
 const pinataSDK = require("@pinata/sdk");
-const pinata = pinataSDK("2d7d4578a389f9aa8c07", "bbc0eafd85df40edd68f5de5d583c4dcc9f69a6fbcb68e29e97c9c5a2516f49e");
+const pinata = new pinataSDK(
+  "2d7d4578a389f9aa8c07",
+  "bbc0eafd85df40edd68f5de5d583c4dcc9f69a6fbcb68e29e97c9c5a2516f49e"
+);
 
 import multerConfig from "./config/multer";
 
@@ -77,7 +80,7 @@ app.post(
 app.post("/new-collection/", newCollection);
 app.post("/drive-service/", driveController.driveService);
 
-app.post("/ipfs", cors(), upload.single("uploaded_file"), function (req: any, res) {
+app.post("/ipfs/", upload.single("uploaded_file"), function (req: any, res) {
   if (req.file) {
     // eslint-disable-next-line n/no-path-concat
     const readableStreamForFile = fs.createReadStream(__dirname + "/storage/img/" + req.file.filename);
