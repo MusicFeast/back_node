@@ -24,10 +24,7 @@ const fs = require("fs");
 import path from "path";
 
 const pinataSDK = require("@pinata/sdk");
-const pinata = new pinataSDK(
-  "f1d9b9a0de834245bddc",
-  "bbdab25a4fbc098ee462a1f47cd26e1f2ffad8c4733e98f84f22c338799aa500"
-);
+const pinata = new pinataSDK(process.env.PINATA_API_KEY, process.env.PINATA_SECRET);
 
 import multerConfig from "./config/multer";
 
@@ -107,7 +104,17 @@ app.post("/ipfs/", upload.single("uploaded_file"), function (req: any, res: any)
           if (fs.existsSync(filePath)) {
             fs.unlinkSync(filePath);
           }
-          res.json(result);
+
+          if (result.IpfsHash) {
+            res.json(
+              "https://cyan-enthusiastic-pigeon-169.mypinata.cloud/ipfs/" +
+                process.env.PINATA_API_KEY +
+                "?pinataGatewayToken=" +
+                process.env.PINATA_GATEWAY
+            );
+          } else {
+            res.status(500).json({ error: "Internal server error" });
+          }
         })
         .catch((err: any) => {
           // handle error here
