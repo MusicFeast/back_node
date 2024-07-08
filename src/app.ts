@@ -22,6 +22,9 @@ import {
 import multer from "multer";
 const fs = require("fs");
 
+const pinataSDK = require("@pinata/sdk");
+const pinata = pinataSDK("2d7d4578a389f9aa8c07", "bbc0eafd85df40edd68f5de5d583c4dcc9f69a6fbcb68e29e97c9c5a2516f49e");
+
 import multerConfig from "./config/multer";
 
 const storage = multer.diskStorage({
@@ -73,6 +76,43 @@ app.post(
 
 app.post("/new-collection/", newCollection);
 app.post("/drive-service/", driveController.driveService);
+
+app.post("/ipfs", cors(), upload.single("uploaded_file"), function (req: any, res) {
+  if (req.file) {
+    // eslint-disable-next-line n/no-path-concat
+    const readableStreamForFile = fs.createReadStream(__dirname + "/storage/img/" + req.file.filename);
+    const options = {
+      pinataMetadata: {
+        name: req.body.name,
+        keyvalues: {
+          customKey: "customValue",
+          customKey2: "customValue2",
+        },
+      },
+      pinataOptions: {
+        cidVersion: 0,
+      },
+    };
+    console.log(req.file);
+    pinata
+      .pinFileToIPFS(readableStreamForFile, options)
+      .then((result: any) => {
+        // handle results here
+        // eslint-disable-next-line n/no-path-concat
+        const path = __dirname + "/storage/img/" + "/" + req.file.filename;
+        if (fs.existsSync(path)) {
+          fs.unlinkSync(path);
+        }
+        console.log(result);
+        res.json(result);
+      })
+      .catch((err: any) => {
+        // handle error here
+        res.json(err);
+        console.log(err);
+      });
+  }
+});
 
 console.log(process.env.NODE_ENV);
 if (process.env.NODE_ENV === "production") {
