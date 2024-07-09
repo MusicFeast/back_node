@@ -108,7 +108,7 @@ app.post("/ipfs/", upload.single("uploaded_file"), function (req: any, res: any)
           if (result.IpfsHash) {
             res.json(
               "https://cyan-enthusiastic-pigeon-169.mypinata.cloud/ipfs/" +
-                process.env.PINATA_API_KEY +
+                result.IpfsHash +
                 "?pinataGatewayToken=" +
                 process.env.PINATA_GATEWAY
             );
@@ -119,7 +119,7 @@ app.post("/ipfs/", upload.single("uploaded_file"), function (req: any, res: any)
         .catch((err: any) => {
           // handle error here
           console.log("err", err);
-          res.status(500).json({ error: err.message });
+          res.status(500).json({ error: err.message || err });
         });
     } else {
       res.status(400).json({ error: "No file uploaded" });
