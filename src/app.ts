@@ -119,7 +119,7 @@ app.post("/ipfs/", upload.single("uploaded_file"), function (req: any, res: any)
         .catch((err: any) => {
           // handle error here
           console.log("err", err);
-          res.status(500).json({ error: err.message || err });
+          res.status(500).json({ error: err.message || err || "Error pip pip" });
         });
     } else {
       res.status(400).json({ error: "No file uploaded" });
