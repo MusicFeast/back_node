@@ -1,4 +1,5 @@
 import "dotenv/config";
+require("dotenv").config();
 // import "reflect-metadata";
 import express, { Router } from "express";
 import cors from "cors";
@@ -24,6 +25,7 @@ const fs = require("fs");
 import path from "path";
 
 const pinataSDK = require("@pinata/sdk");
+console.log(process.env.PINATA_API_KEY, process.env.PINATA_SECRET);
 const pinata = new pinataSDK(process.env.PINATA_API_KEY, process.env.PINATA_SECRET);
 
 import multerConfig from "./config/multer";
